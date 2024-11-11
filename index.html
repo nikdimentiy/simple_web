@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Analytics Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+</head>
+
+<body>
+    <h1>[ Reading Analytics Dashboard ]</h1>
+
+    <!-- Book Entry Section -->
+    <div class="card">
+        <h2>[ BOOK DETAILS ]</h2>
+        <div>
+            <label>Book Title:</label>
+            <input type="text" id="bookTitle" placeholder="Enter book title">
+        </div>
+        <div>
+            <label>Total Pages:</label>
+            <input type="number" id="totalPagesInput" placeholder="Enter total pages" min="1">
+        </div>
+        <button onclick="setBookDetails()">Set Book Details</button>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="card metric-card">
+            <div class="metric-label">Completion Rate</div>
+            <div id="completionRate" class="metric-value">0%</div>
+            <div class="progress-bar">
+                <div id="progressBar" class="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="card metric-card">
+            <div class="metric-label">Total Pages Read</div>
+            <div id="totalPagesRead" class="metric-value">0</div>
+        </div>
+
+        <div class="card metric-card">
+            <div class="metric-label">Reading Velocity</div>
+            <div id="readingVelocity" class="metric-value">0</div>
+            <div class="metric-label">pages/hour</div>
+        </div>
+
+        <div class="card metric-card">
+            <div class="metric-label">Estimated Completion</div>
+            <div id="estimatedCompletion" class="metric-value">-</div>
+            <div class="metric-label">days remaining</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>[ READING PARAMETERS ]</h2>
+        <div>
+            <label>Reading Speed (pages/hour):</label>
+            <input type="number" id="readingSpeed" value="20" min="1">
+        </div>
+        <div>
+            <label>Daily Reading Time (hours):</label>
+            <input type="number" id="dailyReadingTime" value="2" min="0.5" step="0.5">
+        </div>
+        <button onclick="updateCalculations()">Update Projections</button>
+    </div>
+
+    <div class="card">
+        <h2>[ LOG SESSION ]</h2>
+        <div>
+            <label>Date:</label>
+            <input type="date" id="newDate">
+            <label>Pages:</label>
+            <input type="number" id="newPages" min="1">
+            <label>Notes:</label>
+            <input type="text" id="newNotes">
+            <button onclick="addEntry()">Log Session</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>[ DATA MANAGEMENT ]</h2>
+        <div>
+            <input type="file" id="csvFile" accept=".csv">
+            <button onclick="exportToCSV()">Export Data</button>
+            <button onclick="importFromCSV()">Import Data</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>[ READING LOG ]</h2>
+        <table id="readingLog">
+            <thead>
+                <tr>
+                    <th>DATE</th>
+                    <th>PAGES</th>
+                    <th>VELOCITY</th>
+                    <th>NOTES</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
