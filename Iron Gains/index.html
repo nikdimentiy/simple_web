@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[ IRON GAINS ]</title>
+    <!-- Font imports -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="navbar">
+        <h1>[ IRON GAINS Dashboard ]</h1>
+        <p class="motto">"The last three or four reps is what makes the muscle grow. This area of pain divides a
+            champion from someone who is not a champion." - Arnold Schwarzenegger</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="card metric-card">
+            <div class="metric-label">Weekly Volume</div>
+            <div id="weeklyVolume" class="metric-value">0</div>
+            <div class="metric-label">total sets</div>
+            <div class="metric-icon">🏋️‍♂️</div>
+        </div>
+
+        <div class="card metric-card">
+            <div class="metric-label">Personal Records</div>
+            <div id="prCount" class="metric-value">0</div>
+            <div class="metric-label">this month</div>
+            <div class="metric-icon">🏆</div>
+        </div>
+
+        <div class="card metric-card">
+            <div class="metric-label">Workout Streak</div>
+            <div id="workoutStreak" class="metric-value">0</div>
+            <div class="metric-label">days</div>
+            <div class="metric-icon">🔥</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>[ LOG WORKOUT ]</h2>
+        <div class="split-grid">
+            <div class="form-group">
+                <label>📅 Date:</label>
+                <input type="date" id="workoutDate">
+            </div>
+            <div class="form-group">
+                <label>💪 Muscle Group:</label>
+                <select id="muscleGroup" onchange="updateExerciseList()">
+                    <option value="">Select Muscle Group</option>
+                    <option value="chest">1. Chest (Pectorals)</option>
+                    <option value="back">2. Back</option>
+                    <option value="shoulders">3. Shoulders (Deltoids)</option>
+                    <option value="arms">4. Arms</option>
+                    <option value="abs">5. Abdominals (Core)</option>
+                    <option value="legs">6. Legs</option>
+                    <option value="hips">7. Hip Muscles</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>🎯 Exercise:</label>
+                <select id="exercise">
+                    <option value="">Select Exercise</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>⚖️ Weight (kg):</label>
+                <input type="number" id="weight" min="0" step="2.5">
+            </div>
+            <div class="form-group">
+                <label>🔄 Sets:</label>
+                <input type="number" id="sets" min="1" max="10">
+            </div>
+            <div class="form-group">
+                <label>🔢 Reps:</label>
+                <input type="number" id="reps" min="1" max="30">
+            </div>
+            <div class="form-group notes-group">
+                <label>📝 Notes:</label>
+                <textarea id="notes" rows="3"
+                    placeholder="How was your workout? Any achievements or challenges?"></textarea>
+            </div>
+        </div>
+        <div class="button-group">
+            <button onclick="logWorkout()" class="primary-button">
+                <span class="button-icon">💪</span>
+                LOG SET
+            </button>
+            <button onclick="exportToCSV()" class="secondary-button">
+                <span class="button-icon">📤</span>
+                EXPORT TO CSV
+            </button>
+            <button onclick="importFromCSV()" class="secondary-button">
+                <span class="button-icon">📥</span>
+                IMPORT FROM CSV
+            </button>
+            <input type="file" id="csvFileInput" accept=".csv" style="display: none;"
+                onchange="handleFileSelect(event)">
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>[ PERSONAL RECORDS 🏆 ]</h2>
+        <div id="prTable" class="table-container"></div>
+    </div>
+
+    <div class="card">
+        <h2>[ WORKOUT LOG 📋 ]</h2>
+        <div class="table-container">
+            <table id="workoutLog">
+                <thead>
+                    <tr>
+                        <th>DATE</th>
+                        <th>EXERCISE</th>
+                        <th>WEIGHT</th>
+                        <th>SETS</th>
+                        <th>REPS</th>
+                        <th>VOLUME</th>
+                        <th>NOTES</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading your gains...</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>💪 Stay Strong, Keep Growing 💪</p>
+        <p class="footer-version">IRON GAINS Dashboard v1.0</p>
+    </footer>
+
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
+</body>
+
+</html>
