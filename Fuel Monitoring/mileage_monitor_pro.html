@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☘️ Mileage Monitor Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+    <style>
+        :root {
+            --primary-color: #1e88e5;
+            --secondary-color: #173d6e;
+            --success-color: #00c853;
+            --warning-color: #ffd600;
+            --danger-color: #ff1744;
+            --background-dark: #1a1a1a;
+            --card-background: #242424;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --border-color: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--background-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .form-container {
+            background: var(--card-background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+            border: 1px solid var(--border-color);
+        }
+
+        input {
+            background: var(--background-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.8rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            min-width: 200px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        #addRecord {
+            background: var(--success-color);
+            color: white;
+        }
+
+        #saveCSV {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .file-input-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-input-container input[type="file"] {
+            display: none;
+        }
+
+        .file-input-label {
+            background: var(--warning-color);
+            color: black;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            background: #ffc107;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--card-background);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        th {
+            background: var(--secondary-color);
+            color: var(--text-primary);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        td {
+            padding: 1rem;
+            color: var(--text-primary);
+            border-top: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        tr:hover {
+            background: rgba(30, 136, 229, 0.1);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 4px;
+            color: white;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.success {
+            background-color: var(--success-color);
+            opacity: 1;
+        }
+
+        .notification.error {
+            background-color: var(--danger-color);
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <h1>☘️ Mileage Monitor Pro 📊</h1>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3>TOTAL DISTANCE 🛣️</h3>
+                <div class="value" id="totalDistance">0 mi</div>
+            </div>
+            <div class="stat-card">
+                <h3>WEEKLY AVERAGE 📅</h3>
+                <div class="value" id="weeklyAverage">0 mi</div>
+            </div>
+            <div class="stat-card">
+                <h3>LAST ENTRY ⏱️</h3>
+                <div class="value" id="lastEntry">-</div>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <input type="text" id="dateTime" placeholder="Select Date and Time" required>
+            <input type="number" id="currentMileage" placeholder="Current Mileage" required>
+            <button type="button" id="addRecord">📝 Add Record</button>
+            <button type="button" id="saveCSV">📤 Export Data</button>
+            <div class="file-input-container">
+                <label for="loadCSV" class="file-input-label">📥 Import CSV</label>
+                <input type="file" id="loadCSV" accept=".csv">
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>DATE & TIME 📅</th>
+                    <th>CURRENT MILEAGE 🚗</th>
+                    <th>MILEAGE DIFF ↕️</th>
+                    <th>WEEK # 📊</th>
+                    <th>TOTAL MILEAGE 📈</th>
+                </tr>
+            </thead>
+            <tbody id="mileageTable">
+            </tbody>
+        </table>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <script>
+        flatpickr("#dateTime", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: true,
+            defaultDate: new Date(),
+            minuteIncrement: 1
+        });
+
+        let previousMileage = null;
+        let totalWeeklyMileage = 0;
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification ' + type;
+            setTimeout(() => {
+                notification.className = 'notification';
+            }, 3000);
+        }
+
+        function getWeekNumber(date) {
+            const target = new Date(date);
+            target.setDate(target.getDate() - ((target.getDay() + 6) % 7) + 3);
+            const firstThursday = new Date(target.getFullYear(), 0, 4);
+            firstThursday.setDate(firstThursday.getDate() - ((firstThursday.getDay() + 6) % 7) + 3);
+            return Math.floor(1 + (target - firstThursday) / (7 * 24 * 60 * 60 * 1000));
+        }
+
+        function createTableRow(dateTime, currentMileage, mileageDifference, weekNumber, totalMileage) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${dateTime}</td>
+                <td>${currentMileage}</td>
+                <td>${mileageDifference}</td>
+                <td>${weekNumber}</td>
+                <td>${totalMileage}</td>
+            `;
+            return row;
+        }
+
+        function recalculateMileages() {
+            let totalDistance = 0;
+            const rows = document.querySelectorAll("#mileageTable tr");
+
+            rows.forEach((row) => {
+                const mileageDiff = parseFloat(row.cells[2].textContent);
+                totalDistance += mileageDiff;
+            });
+
+            const weeklyAverage = totalDistance / 52;  // Assuming one-year data for simplicity
+            document.getElementById("totalDistance").textContent = totalDistance.toFixed(2) + " mi";
+            document.getElementById("weeklyAverage").textContent = weeklyAverage.toFixed(2) + " mi";
+            document.getElementById("lastEntry").textContent = rows.length > 0 ? rows[rows.length - 1].cells[0].textContent : "-";
+        }
+
+        document.getElementById("addRecord").addEventListener("click", () => {
+            const dateTime = document.getElementById("dateTime").value;
+            const currentMileage = parseFloat(document.getElementById("currentMileage").value);
+
+            if (!dateTime || isNaN(currentMileage)) {
+                showNotification("Please fill in both date and mileage.", "error");
+                return;
+            }
+
+            const mileageDifference = previousMileage !== null ? currentMileage - previousMileage : 0;
+            const weekNumber = getWeekNumber(new Date(dateTime));
+            totalWeeklyMileage += mileageDifference;
+
+            const row = createTableRow(dateTime, currentMileage, mileageDifference, weekNumber, totalWeeklyMileage);
+            document.getElementById("mileageTable").appendChild(row);
+
+            previousMileage = currentMileage;
+
+            recalculateMileages();
+            showNotification("Record added successfully!", "success");
+
+            document.getElementById("dateTime").value = '';
+            document.getElementById("currentMileage").value = '';
+        });
+
+        document.getElementById("saveCSV").addEventListener("click", () => {
+            let csvContent = "DATE & TIME,CURRENT MILEAGE,MILEAGE DIFF,WEEK #,TOTAL MILEAGE\n";
+
+            document.querySelectorAll("#mileageTable tr").forEach(row => {
+                let rowData = Array.from(row.cells).map(cell => cell.textContent).join(",");
+                csvContent += rowData + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "mileage_data.csv");
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            URL.revokeObjectURL(url);
+
+            showNotification("Data exported successfully!", "success");
+        });
+
+        function loadCSV(file) {
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                try {
+                    const text = event.target.result;
+                    const lines = text.split('\n').filter(line => line.trim() !== '');
+
+                    document.getElementById('mileageTable').innerHTML = '';
+                    previousMileage = null;
+                    totalWeeklyMileage = 0;
+
+                    lines.forEach((line) => {
+                        const values = line.split(',').map(value => value.trim());
+                        if (values.length >= 2) {
+                            const dateTime = values[0];
+                            const currentMileage = parseFloat(values[1]);
+
+                            if (!isNaN(currentMileage)) {
+                                const mileageDifference = previousMileage !== null ? currentMileage - previousMileage : 0;
+                                const weekNumber = getWeekNumber(new Date(dateTime));
+                                totalWeeklyMileage += mileageDifference;
+
+                                const row = createTableRow(dateTime, currentMileage, mileageDifference, weekNumber, totalWeeklyMileage);
+                                document.getElementById('mileageTable').appendChild(row);
+
+                                previousMileage = currentMileage;
+                            }
+                        }
+                    });
+
+                    recalculateMileages();
+                    showNotification('Data loaded successfully from CSV', 'success');
+                } catch (error) {
+                    showNotification('Failed to load CSV data', 'error');
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        document.getElementById('loadCSV').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                loadCSV(file);
+            }
+        });
+    </script>
+</body>
+
+</html>
