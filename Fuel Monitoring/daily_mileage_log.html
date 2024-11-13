@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gas Monitoring ⛽️</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+            /* Center align table data */
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        .form-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 150px;
+        }
+
+        #dateTime {
+            background-color: white;
+            cursor: pointer;
+            padding-right: 30px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+
+        button {
+            padding: 10px 15px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button#addRecord {
+            background-color: #4CAF50;
+        }
+
+        button#saveCSV {
+            background-color: #2196F3;
+            /* Blue for Save to CSV */
+        }
+
+        button#loadCSV {
+            background-color: #ffeb3b;
+            /* Yellow for Load from CSV */
+            color: black;
+            /* Change text color for better visibility */
+        }
+
+        button:hover {
+            opacity: 0.9;
+            /* Reduce opacity on hover */
+        }
+
+        .flatpickr-calendar {
+            box-shadow: 0 3px 13px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Edit mode styles */
+        .edit-buttons {
+            display: none;
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            gap: 5px;
+        }
+
+        tr:hover .edit-buttons {
+            display: flex;
+        }
+
+        .edit-btn,
+        .save-btn,
+        .delete-btn {
+            padding: 3px 8px;
+            font-size: 12px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        .edit-btn {
+            background-color: #2196F3;
+        }
+
+        .save-btn {
+            background-color: #4CAF50;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+        }
+
+        .editing {
+            background-color: #fff3cd !important;
+        }
+
+        .editing input {
+            width: 100%;
+            box-sizing: border-box;
+            margin: -5px;
+            padding: 5px;
+        }
+
+        .cell-content {
+            margin-right: 60px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Gas Monitoring Log ⛽️</h1>
+
+    <! <div class="form-container">
+        <input type="text" id="dateTime" placeholder="Select Date and Time" required>
+        <input type="number" id="currentMileage" placeholder="Current Mileage 🚗" required>
+        <button type="button" id="addRecord">Add Record</button>
+        <button type="button" id="saveCSV">Save to CSV</button>
+        <input type="file" id="loadCSV" accept=".csv">
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date and Time ⏰</th>
+                    <th>Current Mileage 🚗</th>
+                    <th>Mileage Difference 📏</th>
+                    <th>Week Number 📅</th>
+                    <th>Total Mileage 📊</th>
+                </tr>
+            </thead>
+            <tbody id="mileageTable">
+            </tbody>
+        </table>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+        <script>
+            // Initializing Flatpickr for date and time input
+            flatpickr("#dateTime", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                time_24hr: true,
+                defaultDate: new Date(),
+                minuteIncrement: 1
+            });
+
+            let previousMileage = null;
+            let totalWeeklyMileage = 0;
+
+            // Function to get the week number (same as your code)
+            function getWeekNumber(date) {
+                const target = new Date(date);
+                target.setDate(target.getDate() - ((target.getDay() + 6) % 7) + 3);
+                const firstThursday = new Date(target.getFullYear(), 0, 4);
+                firstThursday.setDate(firstThursday.getDate() - ((firstThursday.getDay() + 6) % 7) + 3);
+                return Math.floor(1 + (target - firstThursday) / (7 * 24 * 60 * 60 * 1000));
+            }
+
+            // Recalculate mileages based on edits
+            function recalculateMileages() {
+                const rows = Array.from(document.getElementById('mileageTable').getElementsByTagName('tr'));
+                let prevMileage = null;
+                let weeklyTotal = 0;
+
+                rows.forEach((row) => {
+                    const cells = row.getElementsByTagName('td');
+                    const currentMileage = parseFloat(cells[1].querySelector('.cell-content').textContent);
+                    const mileageDiff = prevMileage !== null ? currentMileage - prevMileage : 0;
+
+                    cells[2].querySelector('.cell-content').textContent = mileageDiff;
+                    weeklyTotal += mileageDiff;
+                    cells[4].querySelector('.cell-content').textContent = weeklyTotal;
+
+                    prevMileage = currentMileage;
+                });
+            }
+
+            // Create a new row with editing capability
+            function createTableRow(dateTime, currentMileage, mileageDifference, weekNumber, totalMileage) {
+                const row = document.createElement('tr');
+                const cells = [dateTime, currentMileage, mileageDifference, weekNumber, totalMileage];
+
+                cells.forEach((content) => {
+                    const td = document.createElement('td');
+                    td.innerHTML = `
+                    <span class="cell-content">${content}</span>
+                    <div class="edit-buttons">
+                        <button class="edit-btn">Edit</button>
+                        <button class="save-btn" style="display:none">Save</button>
+                        <button class="delete-btn">Delete</button>
+                    </div>
+                `;
+                    row.appendChild(td);
+                });
+
+                return row;
+            }
+
+            // Make the cell editable
+            function makeEditable(cell) {
+                const content = cell.querySelector('.cell-content');
+                const originalValue = content.textContent;
+                cell.classList.add('editing');
+
+                let input;
+                if (cell.cellIndex === 0) { // Date column
+                    input = document.createElement('input');
+                    input.type = 'text';
+                    flatpickr(input, {
+                        enableTime: true,
+                        dateFormat: "Y-m-d H:i",
+                        defaultDate: originalValue,
+                        time_24hr: true
+                    });
+                } else if (cell.cellIndex === 1) { // Mileage column
+                    input = document.createElement('input');
+                    input.type = 'number';
+                    input.value = originalValue;
+                } else {
+                    return; // Other columns are not editable
+                }
+
+                content.innerHTML = '';
+                content.appendChild(input);
+                input.focus();
+            }
+
+            // Save the edited cell
+            function saveEdit(cell) {
+                const content = cell.querySelector('.cell-content');
+                const input = content.querySelector('input');
+                const newValue = input.value;
+
+                content.textContent = newValue;
+                cell.classList.remove('editing');
+
+                if (cell.cellIndex === 0) { // Date column
+                    const date = new Date(newValue);
+                    const weekNumber = getWeekNumber(date);
+                    const mileageDiff = previousMileage !== null ? parseFloat(cell.nextElementSibling.querySelector('.cell-content').textContent) : 0;
+
+                    recalculateMileages();
+                } else if (cell.cellIndex === 1) { // Mileage column
+                    previousMileage = parseFloat(newValue);
+                    recalculateMileages();
+                }
+            }
+
+            // Load CSV
+            function loadCSV(file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const text = event.target.result;
+                    const lines = text.split('\n');
+                    lines.forEach((line) => {
+                        const values = line.split(',');
+                        if (values.length >= 2) {
+                            const dateTime = values[0].trim();
+                            const currentMileage = parseFloat(values[1].trim());
+                            if (!isNaN(currentMileage)) {
+                                const mileageDifference = previousMileage !== null ? currentMileage - previousMileage : 0;
+                                const weekNumber = getWeekNumber(new Date(dateTime));
+                                totalWeeklyMileage += mileageDifference;
+                                const row = createTableRow(dateTime, currentMileage, mileageDifference, weekNumber, totalWeeklyMileage);
+                                document.getElementById('mileageTable').appendChild(row);
+                                previousMileage = currentMileage;
+                            }
+                        }
+                    });
+                    recalculateMileages();
+                };
+                reader.readAsText(file);
+            }
+
+            // Save to CSV
+            function saveToCSV() {
+                const rows = Array.from(document.getElementById('mileageTable').getElementsByTagName('tr'));
+                const csvContent = "data:text/csv;charset=utf-8,"
+                    + rows.map(row => Array.from(row.querySelectorAll('td')).map(cell => cell.querySelector('.cell-content').textContent).join(',')).join('\n');
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement('a');
+                link.setAttribute('href', encodedUri);
+                link.setAttribute('download', 'mileage_log.csv');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            // Event listeners for adding records, loading CSV, and saving CSV
+            document.getElementById('addRecord').addEventListener('click', () => {
+                const dateTime = document.getElementById('dateTime').value;
+                const currentMileage = parseFloat(document.getElementById('currentMileage').value);
+
+                if (!dateTime || isNaN(currentMileage)) {
+                    alert('Please fill in both fields!');
+                    return;
+                }
+
+                const mileageDifference = previousMileage !== null ? currentMileage - previousMileage : 0;
+                const weekNumber = getWeekNumber(new Date(dateTime));
+                const totalMileage = totalWeeklyMileage + mileageDifference;
+
+                const row = createTableRow(dateTime, currentMileage, mileageDifference, weekNumber, totalMileage);
+                document.getElementById('mileageTable').appendChild(row);
+                previousMileage = currentMileage;
+                totalWeeklyMileage = totalMileage;
+
+                document.getElementById('dateTime').value = '';
+                document.getElementById('currentMileage').value = '';
+            });
+
+            document.getElementById('loadCSV').addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    loadCSV(file);
+                }
+            });
+
+            document.getElementById('saveCSV').addEventListener('click', () => {
+                saveToCSV();
+            });
+
+            document.getElementById('mileageTable').addEventListener('click', (event) => {
+                const target = event.target;
+                const cell = target.closest('td');
+
+                if (target.classList.contains('edit-btn')) {
+                    makeEditable(cell);
+                    target.style.display = 'none';
+                    cell.querySelector('.save-btn').style.display = 'inline-block';
+                } else if (target.classList.contains('save-btn')) {
+                    saveEdit(cell);
+                    target.style.display = 'none';
+                    cell.querySelector('.edit-btn').style.display = 'inline-block';
+                } else if (target.classList.contains('delete-btn')) {
+                    cell.closest('tr').remove();
+                    recalculateMileages();
+                }
+            });
+        </script>
+</body>
+
+</html>
