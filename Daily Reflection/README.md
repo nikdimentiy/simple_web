@@ -2,8 +2,6 @@
 
 A minimalist web application for recording daily reflections and tracking personal growth. Built with vanilla JavaScript and a clean, modern UI design.
 
-![Daily Reflection App Screenshot](https://raw.githubusercontent.com/username/daily-reflection/main/screenshot.png)
-
 ## Features ✨
 
 - **Simple Time Tracking**: Record your wake-up time and date
