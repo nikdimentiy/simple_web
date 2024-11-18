@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Previous head content remains the same -->
+    <title>Daily Checker</title>
+    <style>
+        /* ... Previous CSS remains exactly the same ... */
+        :root {
+            --primary: #2F3640;
+            --secondary: #F5F6F8;
+            --accent: #8395A7;
+            --success: #A8E6CF;
+            --text: #2C3A47;
+            --light-gray: #EEF0F2;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            background: var(--secondary);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin: 0 0 40px 0;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+        
+        .header-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--light-gray);
+            border-radius: 2px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--secondary);
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+        }
+        
+        .reflection {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .reflection h2 {
+            color: var(--primary);
+            font-weight: 400;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .reflection textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 2px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            background: var(--secondary);
+            transition: all 0.3s ease;
+            resize: vertical;
+        }
+        
+        .reflection textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+        }
+        
+        .btn-nordic {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 2px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .btn-nordic:hover {
+            background: var(--accent);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: var(--success);
+            color: var(--text);
+            border-radius: 2px;
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Daily Reflection</h1>
+        
+        <div class="header-section">
+            <div class="input-group">
+                <label>Wake Up Time</label>
+                <input type="time" id="wakeup-time">
+            </div>
+            <div class="input-group">
+                <label>Date</label>
+                <input type="date" id="current-date">
+            </div>
+        </div>
+        
+        <div class="reflection">
+            <h2>Today's Reflections</h2>
+            <div class="input-group">
+                <label>What went well today?</label>
+                <textarea id="went-well" placeholder="Take a moment to reflect on your achievements..."></textarea>
+            </div>
+            <div class="input-group">
+                <label>What could be improved?</label>
+                <textarea id="to-improve" placeholder="Consider areas for growth..."></textarea>
+            </div>
+            <button class="btn-nordic" onclick="saveToCSV()">Save Reflection</button>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        Reflection saved successfully!
+    </div>
+
+    <script>
+        // Set today's date as default
+        document.getElementById('current-date').valueAsDate = new Date();
+
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function saveToCSV() {
+            // Validate if all fields are filled
+            const date = document.getElementById('current-date').value;
+            const wakeUpTime = document.getElementById('wakeup-time').value;
+            const wentWell = document.getElementById('went-well').value;
+            const toImprove = document.getElementById('to-improve').value;
+
+            if (!date || !wakeUpTime || !wentWell || !toImprove) {
+                alert('Please fill in all fields before saving.');
+                return;
+            }
+
+            // Create CSV header and row
+            const headers = 'Date,Wake Up Time,What Went Well,What Could Be Improved\n';
+            const csvRow = `${date},${wakeUpTime},"${wentWell.replace(/,/g, ';').replace(/\n/g, ' ')}","${toImprove.replace(/,/g, ';').replace(/\n/g, ' ')}"\n`;
+            const csvContent = headers + csvRow;
+
+            // Create blob and download link
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `reflection_${date}.csv`);
+            document.body.appendChild(a);
+
+            // Trigger download
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+
+            // Show notification
+            showNotification();
+        }
+    </script>
+</body>
+</html>
