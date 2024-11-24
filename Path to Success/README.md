@@ -70,10 +70,6 @@ You can customize the dashboard by modifying:
 - Metrics and their values
 - Motivational rules and tips
 
-## 📱 Screenshots
-
-(Add screenshots of your application here)
-
 ## 🤝 Contributing
 
 1. Fork the repository
