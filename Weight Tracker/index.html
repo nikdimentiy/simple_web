@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Weight Tracking Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Weight Tracking Dashboard</h1>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressBar"></div>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-title">Current Weight</div>
+          <div class="metric-value" id="currentWeight">190.2 lbs</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Goal Weight</div>
+          <div class="metric-value" id="goalWeight">173.0 lbs</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Weight to Lose</div>
+          <div class="metric-value" id="weightToLose">17.2 lbs</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Progress</div>
+          <div class="metric-value" id="progress">0%</div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <canvas id="weightChart"></canvas>
+      </div>
+
+      <div class="input-section">
+        <input type="date" id="dateInput" required />
+        <input
+          type="number"
+          id="weightInput"
+          step="0.1"
+          placeholder="Weight in lbs"
+          required
+        />
+        <button onclick="addWeight()">Add Weight</button>
+        <button onclick="document.getElementById('csvFile').click()">
+          Import CSV
+        </button>
+        <button onclick="exportToCSV()">Export CSV</button>
+        <input
+          type="file"
+          id="csvFile"
+          class="file-input"
+          accept=".csv"
+          onchange="importCSV(this)"
+        />
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
