@@ -90,7 +90,7 @@ This project is licensed under the MIT License.
 
 ## 📞 Contact
 
-Your Name - nikdimentiy@yahoo.com
+Email - nikdimentiy@yahoo.com
 Project Link: [https://github.com/nikdimentiy/simple_web](https://github.com/nikdimentiy/simple_web)
 
 ---
