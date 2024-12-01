@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Inner Power</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="celtic-container">
+      <div class="celtic-border">
+        <h1 class="celtic-title">Daily Inner Power</h1>
+
+        <div class="celtic-section">
+          <div class="celtic-input">
+            <label>Wake Up Time</label>
+            <input type="time" class="celtic-field" id="wakeTime" />
+          </div>
+
+          <div class="celtic-input">
+            <label>Date</label>
+            <input type="date" class="celtic-field" id="date" />
+          </div>
+        </div>
+
+        <div class="celtic-section">
+          <h2 class="celtic-subtitle">Today's Reflections</h2>
+
+          <div class="celtic-input">
+            <label>What went well today?</label>
+            <textarea class="celtic-field" id="wentWell"></textarea>
+          </div>
+
+          <div class="celtic-input">
+            <label>What could be improved?</label>
+            <textarea class="celtic-field" id="improvements"></textarea>
+          </div>
+        </div>
+
+        <div class="celtic-section">
+          <h2 class="celtic-subtitle">Daily Rituals</h2>
+          <div class="ritual-grid">
+            <div class="ritual-item fit">
+              <label>
+                <input type="checkbox" id="fit" />
+                <span class="ritual-name">💪 Fit</span>
+              </label>
+            </div>
+            <div class="ritual-item books">
+              <label>
+                <input type="checkbox" id="books" />
+                <span class="ritual-name">📚 Books</span>
+              </label>
+            </div>
+            <div class="ritual-item online">
+              <label>
+                <input type="checkbox" id="online" />
+                <span class="ritual-name">🌐 Online</span>
+              </label>
+            </div>
+            <div class="ritual-item english">
+              <label>
+                <input type="checkbox" id="english" />
+                <span class="ritual-name">🗣️ English</span>
+              </label>
+            </div>
+            <div class="ritual-item wakeup">
+              <label>
+                <input type="checkbox" id="wakeup" />
+                <span class="ritual-name">⏰ Wake UP</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <button class="celtic-button" onclick="saveJourney()">
+          Save Journey
+        </button>
+      </div>
+    </div>
+
+    <div id="notification" class="celtic-notification">
+      Journey saved successfully!
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
