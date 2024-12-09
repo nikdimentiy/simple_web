@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cardio Fitness Metrics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap");
+
+      body {
+        font-family: "Cinzel", serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(to bottom, #3d5a38, #2e3a23);
+        color: #f0e68c;
+      }
+      header {
+        background: linear-gradient(90deg, #228b22, #32cd32);
+        padding: 15px 0;
+        text-align: center;
+        border-bottom: 3px solid #d4af37;
+      }
+      header h1 {
+        color: #ffd700;
+        font-size: 2em;
+        letter-spacing: 1px;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .container {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 15px;
+        background: #e0e0d1;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      }
+      .visuals {
+        margin-bottom: 15px;
+      }
+      .visuals canvas {
+        width: 100%;
+        max-height: 200px;
+        border-radius: 6px;
+        box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.15);
+      }
+      .summary {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 15px 0;
+      }
+      .summary div {
+        flex: 1;
+        padding: 10px;
+        background: #d4af37;
+        text-align: center;
+        border-radius: 6px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
+      }
+      .summary div h2 {
+        font-size: 1.4em;
+        color: #ffd700;
+        margin-bottom: 5px;
+      }
+      .summary div p {
+        font-size: 0.9em;
+        color: #666;
+        margin: 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 0.9em;
+        color: #333;
+      }
+      table thead {
+        background: #d4af37;
+        color: white;
+      }
+      table thead th {
+        padding: 10px;
+      }
+      table tbody td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+      }
+      table tbody tr:hover {
+        background: #f5f5f5;
+      }
+      .upload-section {
+        text-align: center;
+        margin-bottom: 15px;
+      }
+      .upload-section input {
+        background: #d4af37;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        font-size: 0.9em;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+      .upload-section input:hover {
+        background: #8b4513;
+      }
+      .activity-percentages {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 15px;
+      }
+      .activity-percentages div {
+        flex: 1;
+        padding: 10px;
+        background: #d4af37;
+        text-align: center;
+        border-radius: 6px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
+      }
+      .activity-percentages div h3 {
+        font-size: 1.2em;
+        color: #ffd700;
+        margin-bottom: 5px;
+      }
+      .activity-percentages div p {
+        font-size: 0.9em;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Cardio Fitness Metrics</h1>
+    </header>
+    <div class="container">
+      <div class="upload-section">
+        <input type="file" id="fileInput" accept=".json" />
+      </div>
+      <div class="visuals">
+        <canvas id="caloriesChart"></canvas>
+      </div>
+      <div class="summary">
+        <div>
+          <h2 id="totalCalories">0</h2>
+          <p>Total Calories</p>
+        </div>
+        <div>
+          <h2 id="totalDistance">0</h2>
+          <p>Total Distance (miles)</p>
+        </div>
+        <div>
+          <h2 id="totalTime">0</h2>
+          <p>Total Time (minutes)</p>
+        </div>
+        <div>
+          <h2 id="maxCalories">0</h2>
+          <p>Max Calories Workout</p>
+        </div>
+        <div>
+          <h2 id="maxDistance">0</h2>
+          <p>Max Distance Workout (miles)</p>
+        </div>
+        <div>
+          <h2 id="maxTime">0</h2>
+          <p>Max Time Workout (minutes)</p>
+        </div>
+      </div>
+      <div class="activity-percentages" id="activityPercentages">
+        <!-- Activity percentages dynamically inserted here -->
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Calories</th>
+            <th>Distance (miles)</th>
+            <th>Time (minutes)</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody id="dataTable"></tbody>
+      </table>
+    </div>
+    <script>
+      const fileInput = document.getElementById("fileInput");
+      const tableBody = document.getElementById("dataTable");
+      const caloriesChartCtx = document
+        .getElementById("caloriesChart")
+        .getContext("2d");
+      let caloriesChartInstance;
+      const activityPercentages = document.getElementById(
+        "activityPercentages"
+      );
+
+      fileInput.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const jsonData = JSON.parse(e.target.result);
+          processData(jsonData);
+        };
+        reader.readAsText(file);
+      });
+
+      function processData(data) {
+        if (!Array.isArray(data)) {
+          alert("Invalid JSON format. Expected an array of objects.");
+          return;
+        }
+
+        const summary = {
+          calories: 0,
+          distance: 0,
+          time: 0,
+          activity: {},
+          maxCalories: 0,
+          maxDistance: 0,
+          maxTime: 0,
+        };
+
+        tableBody.innerHTML = "";
+        data.forEach((entry) => {
+          if (entry.calories && entry.distance && entry.time && entry.type) {
+            summary.calories += entry.calories;
+            summary.distance += entry.distance;
+            summary.time += entry.time;
+            summary.activity[entry.type] =
+              (summary.activity[entry.type] || 0) + 1;
+
+            // Update max values
+            if (entry.calories > summary.maxCalories) {
+              summary.maxCalories = entry.calories;
+            }
+            if (entry.distance > summary.maxDistance) {
+              summary.maxDistance = entry.distance;
+            }
+            if (entry.time > summary.maxTime) {
+              summary.maxTime = entry.time;
+            }
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                        <td>${entry.date || "N/A"}</td>
+                        <td>${entry.calories}</td>
+                        <td>${entry.distance.toFixed(2)}</td>
+                        <td>${entry.time}</td>
+                        <td>${entry.type}</td>
+                    `;
+            tableBody.appendChild(row);
+          }
+        });
+
+        document.getElementById("totalCalories").innerText = summary.calories;
+        document.getElementById("totalDistance").innerText =
+          summary.distance.toFixed(2);
+        document.getElementById("totalTime").innerText = summary.time;
+        document.getElementById("maxCalories").innerText = summary.maxCalories;
+        document.getElementById("maxDistance").innerText =
+          summary.maxDistance.toFixed(2);
+        document.getElementById("maxTime").innerText = summary.maxTime;
+
+        updateCharts(summary, data);
+        updateActivityPercentages(summary.activity);
+      }
+
+      function updateCharts(summary, data) {
+        const dates = data.map((entry) => entry.date || "Unknown Date");
+        const calories = data.map((entry) => entry.calories);
+
+        if (caloriesChartInstance) caloriesChartInstance.destroy();
+        caloriesChartInstance = new Chart(caloriesChartCtx, {
+          type: "bar",
+          data: {
+            labels: dates,
+            datasets: [
+              {
+                label: "Calories Burned",
+                data: calories,
+                backgroundColor: "rgba(212, 175, 55, 0.7)",
+                borderColor: "#d4af37",
+                borderWidth: 1,
+              },
+            ],
+          },
+        });
+      }
+
+      function updateActivityPercentages(activity) {
+        activityPercentages.innerHTML = "";
+        const totalActivities = Object.values(activity).reduce(
+          (sum, count) => sum + count,
+          0
+        );
+
+        for (const [type, count] of Object.entries(activity)) {
+          const percentage = ((count / totalActivities) * 100).toFixed(2);
+          const div = document.createElement("div");
+          div.innerHTML = `
+            <h3>${type}</h3>
+            <p>${percentage}%</p>
+          `;
+          activityPercentages.appendChild(div);
+        }
+      }
+    </script>
+  </body>
+</html>
