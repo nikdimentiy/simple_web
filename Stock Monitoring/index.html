@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Wall Street Stock Monitor</title>
+        <!-- Google Fonts -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Montserrat:wght@600&display=swap"
+            rel="stylesheet"
+        />
+        <!-- Font Awesome for Icons -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+            integrity="sha512-Fo3rlrQkTyVdDyJecCkHb5fHoVMZ+jZVgJQe8XpLjftoM+56Vb3SGH2sQesV6nFFfYdMHIYvSVVvT3w5R+Kk6Q=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <style>
+            /* Reset and Base Styles */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: "Roboto", sans-serif;
+                background: linear-gradient(135deg, #1a1a1a, #333333);
+                color: #f0f0f0;
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+                overflow-x: hidden;
+                animation: backgroundShift 10s ease infinite;
+            }
+
+            @keyframes backgroundShift {
+                0% {
+                    background-position: 0% 50%;
+                }
+                50% {
+                    background-position: 100% 50%;
+                }
+                100% {
+                    background-position: 0% 50%;
+                }
+            }
+
+            .container {
+                max-width: 1400px;
+                width: 100%;
+                background-color: rgba(44, 44, 44, 0.95);
+                padding: 40px;
+                border-radius: 15px;
+                box-shadow: 0 12px 30px 0 rgba(0, 0, 0, 0.3);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                animation: fadeInUp 1s ease forwards;
+                opacity: 0;
+            }
+
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            h1 {
+                text-align: center;
+                font-family: "Montserrat", sans-serif;
+                font-size: 2.5em;
+                margin-bottom: 20px;
+                color: #f1c40f; /* Gold Accent */
+                position: relative;
+            }
+
+            h1::after {
+                content: "";
+                position: absolute;
+                width: 60px;
+                height: 4px;
+                background-color: #f1c40f;
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 2px;
+            }
+
+            .date {
+                text-align: center;
+                margin-bottom: 30px;
+                font-size: 1em;
+                color: #bdc3c7;
+            }
+
+            /* Loader Styles */
+            #loader {
+                display: none;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            #loader i {
+                font-size: 2em;
+                color: #f1c40f;
+                animation: spin 2s linear infinite;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            /* Stock Grid */
+            .stock-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 20px;
+                margin-bottom: 40px;
+            }
+
+            .stock-card {
+                background-color: rgba(60, 60, 60, 0.95);
+                padding: 20px;
+                border-radius: 12px;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+                transition:
+                    transform 0.3s,
+                    box-shadow 0.3s;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                opacity: 0;
+                transform: translateY(20px);
+                animation: fadeInUp 0.5s ease forwards;
+            }
+
+            .stock-card:nth-child(odd) {
+                animation-delay: 0.2s;
+            }
+
+            .stock-card:nth-child(even) {
+                animation-delay: 0.4s;
+            }
+
+            .stock-card:hover {
+                transform: translateY(-5px) scale(1.02);
+                box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+            }
+
+            .stock-logo {
+                width: 50px;
+                height: 50px;
+                object-fit: contain;
+                border-radius: 8px;
+                flex-shrink: 0;
+            }
+
+            .stock-info {
+                flex-grow: 1;
+            }
+
+            .stock-info h2 {
+                font-family: "Montserrat", sans-serif;
+                font-size: 1.3em;
+                color: #f1c40f; /* Gold */
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .stock-info .price {
+                font-size: 1.6em;
+                color: #ecf0f1;
+                font-weight: bold;
+                margin-bottom: 5px;
+                transition: color 0.3s;
+            }
+
+            .stock-info .change {
+                font-size: 1.2em;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                color: #27ae60; /* Green by default */
+                transition: color 0.3s;
+            }
+
+            .stock-info .change.negative {
+                color: #e74c3c; /* Red */
+            }
+
+            /* Average Metrics Section */
+            .average-section {
+                background-color: rgba(60, 60, 60, 0.95);
+                padding: 20px;
+                border-radius: 12px;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+                transition:
+                    transform 0.3s,
+                    box-shadow 0.3s;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                opacity: 0;
+                transform: translateY(20px);
+                animation: fadeInUp 1s ease forwards;
+                animation-delay: 0.6s;
+            }
+
+            .average-section:hover {
+                transform: translateY(-5px) scale(1.02);
+                box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+            }
+
+            .average-section h2 {
+                font-family: "Montserrat", sans-serif;
+                font-size: 1.4em;
+                color: #f1c40f; /* Gold */
+                margin-bottom: 10px;
+            }
+
+            .average-section .average-value {
+                font-size: 2em;
+                color: #ecf0f1;
+                font-weight: bold;
+                margin-bottom: 10px;
+                transition: color 0.3s;
+            }
+
+            .average-section .average-change {
+                font-size: 1.2em;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                color: #27ae60; /* Green by default */
+                transition: color 0.3s;
+            }
+
+            .average-section .average-change.negative {
+                color: #e74c3c; /* Red */
+            }
+
+            /* Responsive Adjustments */
+            @media (max-width: 768px) {
+                .stock-card {
+                    padding: 15px;
+                }
+
+                .stock-info h2 {
+                    font-size: 1.2em;
+                }
+
+                .stock-info .price {
+                    font-size: 1.4em;
+                }
+
+                .stock-info .change {
+                    font-size: 1em;
+                }
+
+                .average-section h2 {
+                    font-size: 1.3em;
+                }
+
+                .average-section .average-value {
+                    font-size: 1.8em;
+                }
+
+                .average-section .average-change {
+                    font-size: 1em;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .stock-card {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .stock-logo {
+                    width: 40px;
+                    height: 40px;
+                }
+
+                .stock-info h2 {
+                    font-size: 1.1em;
+                }
+
+                .stock-info .price {
+                    font-size: 1.2em;
+                }
+
+                .stock-info .change {
+                    font-size: 0.9em;
+                }
+
+                .average-section h2 {
+                    font-size: 1.2em;
+                }
+
+                .average-section .average-value {
+                    font-size: 1.6em;
+                }
+
+                .average-section .average-change {
+                    font-size: 0.9em;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1><i class="fas fa-chart-line"></i> Wall Street Stock Monitor</h1>
+            <div class="date" id="current-date">Loading date...</div>
+
+            <!-- Loader -->
+            <div id="loader">
+                <i class="fas fa-spinner fa-spin"></i> Loading data...
+            </div>
+
+            <!-- Stock Grid -->
+            <div class="stock-grid">
+                <div class="stock-card">
+                    <img
+                        src="https://logo.clearbit.com/apple.com"
+                        alt="Apple Logo"
+                        class="stock-logo"
+                    />
+                    <div class="stock-info">
+                        <h2>Apple (AAPL)</h2>
+                        <div class="price" id="aapl-price">Loading...</div>
+                        <div class="change" id="aapl-change">
+                            <i class="fas fa-arrow-up"></i> 0.00%
+                        </div>
+                    </div>
+                </div>
+                <div class="stock-card">
+                    <img
+                        src="https://logo.clearbit.com/amazon.com"
+                        alt="Amazon Logo"
+                        class="stock-logo"
+                    />
+                    <div class="stock-info">
+                        <h2>Amazon (AMZN)</h2>
+                        <div class="price" id="amzn-price">Loading...</div>
+                        <div class="change" id="amzn-change">
+                            <i class="fas fa-arrow-up"></i> 0.00%
+                        </div>
+                    </div>
+                </div>
+                <div class="stock-card">
+                    <img
+                        src="https://logo.clearbit.com/google.com"
+                        alt="Google Logo"
+                        class="stock-logo"
+                    />
+                    <div class="stock-info">
+                        <h2>Google (GOOGL)</h2>
+                        <div class="price" id="googl-price">Loading...</div>
+                        <div class="change" id="googl-change">
+                            <i class="fas fa-arrow-up"></i> 0.00%
+                        </div>
+                    </div>
+                </div>
+                <div class="stock-card">
+                    <img
+                        src="https://logo.clearbit.com/microsoft.com"
+                        alt="Microsoft Logo"
+                        class="stock-logo"
+                    />
+                    <div class="stock-info">
+                        <h2>Microsoft (MSFT)</h2>
+                        <div class="price" id="msft-price">Loading...</div>
+                        <div class="change" id="msft-change">
+                            <i class="fas fa-arrow-up"></i> 0.00%
+                        </div>
+                    </div>
+                </div>
+                <div class="stock-card">
+                    <img
+                        src="https://logo.clearbit.com/ibm.com"
+                        alt="IBM Logo"
+                        class="stock-logo"
+                    />
+                    <div class="stock-info">
+                        <h2>IBM (IBM)</h2>
+                        <div class="price" id="ibm-price">Loading...</div>
+                        <div class="change" id="ibm-change">
+                            <i class="fas fa-arrow-up"></i> 0.00%
+                        </div>
+                    </div>
+                </div>
+                <div class="stock-card">
+                    <img
+                        src="https://logo.clearbit.com/nvidia.com"
+                        alt="Nvidia Logo"
+                        class="stock-logo"
+                    />
+                    <div class="stock-info">
+                        <h2>Nvidia (NVDA)</h2>
+                        <div class="price" id="nvda-price">Loading...</div>
+                        <div class="change" id="nvda-change">
+                            <i class="fas fa-arrow-up"></i> 0.00%
+                        </div>
+                    </div>
+                </div>
+                <div class="stock-card">
+                    <img
+                        src="https://logo.clearbit.com/salesforce.com"
+                        alt="Salesforce Logo"
+                        class="stock-logo"
+                    />
+                    <div class="stock-info">
+                        <h2>Salesforce (CRM)</h2>
+                        <div class="price" id="crm-price">Loading...</div>
+                        <div class="change" id="crm-change">
+                            <i class="fas fa-arrow-up"></i> 0.00%
+                        </div>
+                    </div>
+                </div>
+                <div class="stock-card">
+                    <img
+                        src="https://logo.clearbit.com/oracle.com"
+                        alt="Oracle Logo"
+                        class="stock-logo"
+                    />
+                    <div class="stock-info">
+                        <h2>Oracle (ORCL)</h2>
+                        <div class="price" id="orcl-price">Loading...</div>
+                        <div class="change" id="orcl-change">
+                            <i class="fas fa-arrow-up"></i> 0.00%
+                        </div>
+                    </div>
+                </div>
+                <div class="stock-card">
+                    <img
+                        src="https://logo.clearbit.com/meta.com"
+                        alt="Meta Platforms Logo"
+                        class="stock-logo"
+                    />
+                    <div class="stock-info">
+                        <h2>Meta Platforms (META)</h2>
+                        <div class="price" id="meta-price">Loading...</div>
+                        <div class="change" id="meta-change">
+                            <i class="fas fa-arrow-up"></i> 0.00%
+                        </div>
+                    </div>
+                </div>
+                <div class="stock-card">
+                    <img
+                        src="https://logo.clearbit.com/tesla.com"
+                        alt="Tesla Logo"
+                        class="stock-logo"
+                    />
+                    <div class="stock-info">
+                        <h2>Tesla (TSLA)</h2>
+                        <div class="price" id="tsla-price">Loading...</div>
+                        <div class="change" id="tsla-change">
+                            <i class="fas fa-arrow-up"></i> 0.00%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Average Metrics Section -->
+            <div class="average-section">
+                <h2>Average of Stocks</h2>
+                <div class="average-value" id="average-price">
+                    Calculating...
+                </div>
+                <div class="average-change" id="average-change">
+                    <i class="fas fa-arrow-up"></i> 0.00%
+                </div>
+            </div>
+
+            <script>
+                //  Alpha Vantage API Key Unclassified for Verification
+                const API_KEY = "XS0ACM2XCU3WRN26";
+
+                // Stock Symbols
+                const stocks = [
+                    {
+                        name: "Apple",
+                        symbol: "AAPL",
+                        logo: "https://logo.clearbit.com/apple.com",
+                    },
+                    {
+                        name: "Amazon",
+                        symbol: "AMZN",
+                        logo: "https://logo.clearbit.com/amazon.com",
+                    },
+                    {
+                        name: "Google",
+                        symbol: "GOOGL",
+                        logo: "https://logo.clearbit.com/google.com",
+                    },
+                    {
+                        name: "Microsoft",
+                        symbol: "MSFT",
+                        logo: "https://logo.clearbit.com/microsoft.com",
+                    },
+                    {
+                        name: "IBM",
+                        symbol: "IBM",
+                        logo: "https://logo.clearbit.com/ibm.com",
+                    },
+                    {
+                        name: "Nvidia",
+                        symbol: "NVDA",
+                        logo: "https://logo.clearbit.com/nvidia.com",
+                    },
+                    {
+                        name: "Salesforce",
+                        symbol: "CRM",
+                        logo: "https://logo.clearbit.com/salesforce.com",
+                    },
+                    {
+                        name: "Oracle",
+                        symbol: "ORCL",
+                        logo: "https://logo.clearbit.com/oracle.com",
+                    },
+                    {
+                        name: "Meta Platforms",
+                        symbol: "META",
+                        logo: "https://logo.clearbit.com/meta.com",
+                    },
+                    {
+                        name: "Tesla",
+                        symbol: "TSLA",
+                        logo: "https://logo.clearbit.com/tesla.com",
+                    },
+                ];
+
+                // Loader Element
+                const loader = document.getElementById("loader");
+
+                // Function to fetch stock data
+                async function fetchStockData(symbol) {
+                    const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${encodeURIComponent(symbol)}&apikey=${API_KEY}`;
+                    try {
+                        const response = await fetch(url);
+                        const data = await response.json();
+                        if (data["Time Series (Daily)"]) {
+                            const timeSeries = data["Time Series (Daily)"];
+                            const dates = Object.keys(timeSeries).sort(
+                                (a, b) => new Date(b) - new Date(a),
+                            );
+                            const latestDate = dates[0];
+                            const yesterdayDate = dates[1];
+                            const latestClose = parseFloat(
+                                timeSeries[latestDate]["4. close"],
+                            );
+                            const yesterdayClose = parseFloat(
+                                timeSeries[yesterdayDate]["4. close"],
+                            );
+                            const changePercent = (
+                                ((latestClose - yesterdayClose) /
+                                    yesterdayClose) *
+                                100
+                            ).toFixed(2);
+                            return {
+                                latestClose,
+                                yesterdayClose,
+                                changePercent,
+                                latestDate,
+                            };
+                        } else if (data["Error Message"]) {
+                            console.error(`Error: ${data["Error Message"]}`);
+                            return null;
+                        } else if (data["Note"]) {
+                            console.error(`Note from API: ${data["Note"]}`);
+                            return null;
+                        } else {
+                            console.error(
+                                `Unexpected response for ${symbol}:`,
+                                data,
+                            );
+                            return null;
+                        }
+                    } catch (error) {
+                        console.error(`Fetch error for ${symbol}:`, error);
+                        return null;
+                    }
+                }
+
+                // Function to update the webpage
+                async function updatePage() {
+                    // Show loader
+                    loader.style.display = "block";
+
+                    // Display current date
+                    const currentDateElem =
+                        document.getElementById("current-date");
+                    const today = new Date();
+                    currentDateElem.textContent = today.toLocaleDateString(
+                        "en-US",
+                        { year: "numeric", month: "long", day: "numeric" },
+                    );
+
+                    let totalClose = 0;
+                    let totalYesterday = 0;
+                    let successfulFetches = 0;
+
+                    // Fetch data for each stock
+                    for (let stock of stocks) {
+                        const data = await fetchStockData(stock.symbol);
+                        if (data) {
+                            // Update price
+                            document.getElementById(
+                                `${stock.symbol.toLowerCase()}-price`,
+                            ).textContent = data.latestClose.toLocaleString(
+                                "en-US",
+                                {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                },
+                            );
+
+                            // Update change
+                            const changeElem = document.getElementById(
+                                `${stock.symbol.toLowerCase()}-change`,
+                            );
+                            if (data.changePercent >= 0) {
+                                changeElem.classList.remove("negative");
+                                changeElem.classList.add("positive");
+                                changeElem.innerHTML = `<i class="fas fa-arrow-up"></i> ${data.changePercent}%`;
+                            } else {
+                                changeElem.classList.remove("positive");
+                                changeElem.classList.add("negative");
+                                changeElem.innerHTML = `<i class="fas fa-arrow-down"></i> ${Math.abs(data.changePercent)}%`;
+                            }
+
+                            // Accumulate totals for average
+                            totalClose += data.latestClose;
+                            totalYesterday += data.yesterdayClose;
+                            successfulFetches++;
+                        } else {
+                            // Display 'N/A' if data fetch failed
+                            document.getElementById(
+                                `${stock.symbol.toLowerCase()}-price`,
+                            ).textContent = "N/A";
+                            document.getElementById(
+                                `${stock.symbol.toLowerCase()}-change`,
+                            ).innerHTML =
+                                `<i class="fas fa-question-circle"></i> N/A`;
+                        }
+                    }
+
+                    // Calculate and display average
+                    if (successfulFetches > 0) {
+                        const averageClose = (
+                            totalClose / successfulFetches
+                        ).toFixed(2);
+                        const averageYesterday = (
+                            totalYesterday / successfulFetches
+                        ).toFixed(2);
+                        const averageChangePercent = (
+                            ((averageClose - averageYesterday) /
+                                averageYesterday) *
+                            100
+                        ).toFixed(2);
+
+                        // Update average price
+                        document.getElementById("average-price").textContent =
+                            `$${parseFloat(averageClose).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+                        // Update average change
+                        const averageChangeElem =
+                            document.getElementById("average-change");
+                        if (averageChangePercent >= 0) {
+                            averageChangeElem.classList.remove("negative");
+                            averageChangeElem.classList.add("positive");
+                            averageChangeElem.innerHTML = `<i class="fas fa-arrow-up"></i> ${averageChangePercent}%`;
+                        } else {
+                            averageChangeElem.classList.remove("positive");
+                            averageChangeElem.classList.add("negative");
+                            averageChangeElem.innerHTML = `<i class="fas fa-arrow-down"></i> ${Math.abs(averageChangePercent)}%`;
+                        }
+                    } else {
+                        // If no successful fetches, display 'N/A'
+                        document.getElementById("average-price").textContent =
+                            "N/A";
+                        document.getElementById("average-change").innerHTML =
+                            `<i class="fas fa-question-circle"></i> N/A`;
+                    }
+
+                    // Hide loader after data fetch
+                    loader.style.display = "none";
+                }
+
+                // Initial update
+                updatePage();
+
+                // Refresh data every 12 minutes to stay within API rate limits
+                setInterval(updatePage, 12 * 60 * 1000);
+            </script>
+        </div>
+    </body>
+</html>
