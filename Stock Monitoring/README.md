@@ -1,6 +1,6 @@
 # 📈 Stock Monitoring Dashboard
 
-Welcome to the **Stock Monitoring Dashboard** repository! 🚀 This project provides a sleek and responsive web interface to monitor real-time stock data for major companies on Wall Street. Stay updated with the latest stock prices, percentage changes, and average metrics—all presented with a modern and visually appealing design.
+Welcome to the **Stock Monitoring Dashboard** 🚀 This project provides a sleek and responsive web interface to monitor real-time stock data for major companies on Wall Street. Stay updated with the latest stock prices, percentage changes, and average metrics—all presented with a modern and visually appealing design.
 
 ## 🌟 Features
 
