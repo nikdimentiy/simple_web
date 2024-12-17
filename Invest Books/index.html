@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Encyclopedia of Investment Wisdom</title>
+
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-pdR+XnuITftEju1J9fMFZ/vp3lkkOq+q3ZEuUv1VQ1IJhInqJHkZZQKx0G1clDhwzRWfChC3XgL1Xj5s+Q5E4w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto+Slab:wght@700&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Colors & Fonts */
+    body {
+      font-family: "Open Sans", sans-serif;
+      background-color: #0d0d0d;
+      color: #e0e0e0;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    :root {
+      --accent-color: #52df27;
+      --dark-bg: #0d0d0d;
+      --mid-bg: #1a1a1a;
+      --light-bg: #262626;
+      --text-color: #e0e0e0;
+      --secondary-text: #b3b3b3;
+      --gradient: linear-gradient(45deg, #52df27, #00c853);
+      --table-header-bg: #1a1a1a;
+      --table-row-hover: #333333;
+      --button-hover-bg: #00a63f;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Navbar */
+    nav {
+      background: rgba(13, 13, 13, 0.95);
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 60px;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+      transition: background 0.3s, padding 0.3s;
+    }
+
+    nav.scrolled {
+      background: rgba(13, 13, 13, 1);
+      padding: 10px 60px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.7);
+    }
+
+    nav .logo {
+      font-family: "Roboto Slab", serif;
+      font-size: 1.8rem;
+      color: var(--accent-color);
+      transition: color 0.3s;
+    }
+
+    nav .logo:hover {
+      color: #f3dc0c;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+    }
+
+    nav ul li a {
+      color: var(--text-color);
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    nav ul li a:hover {
+      color: var(--accent-color);
+    }
+
+    /* Hero Section */
+    .hero {
+      height: 100vh;
+      background: url("https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=compress&cs=tinysrgb&w=1600") center center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      color: #e0e0e0;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      padding: 0 20px;
+    }
+
+    .hero-content h1 {
+      font-family: "Roboto Slab", serif;
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      color: var(--accent-color);
+      animation: fadeInDown 1s ease-out forwards;
+    }
+
+    .hero-content p {
+      font-size: 1.5rem;
+      margin-bottom: 40px;
+      color: #cccccc;
+      animation: fadeInUp 1s ease-out forwards;
+    }
+
+    .hero-content .btn {
+      padding: 15px 50px;
+      background-color: var(--accent-color);
+      color: #0d0d0d;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      transition: background-color 0.3s, transform 0.3s;
+      animation: fadeInUp 1.2s ease-out forwards;
+    }
+
+    .hero-content .btn:hover {
+      background-color: #ece91d;
+      transform: scale(1.05);
+    }
+
+    /* Section Styling */
+    .section {
+      padding: 80px 60px;
+      background-color: var(--mid-bg);
+    }
+
+    .section:nth-child(even) {
+      background-color: #0d0d0d;
+    }
+
+    .section h2 {
+      font-family: "Roboto Slab", serif;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 40px;
+      color: rgb(98, 98, 189);
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      position: relative;
+    }
+
+    .section h2::before {
+      content: "";
+      width: 90px;
+      height: 5px;
+      background-color: var(--accent-color);
+      position: absolute;
+      left: 50%;
+      bottom: -15px;
+      transform: translateX(-50%);
+    }
+
+    /* Books Table */
+    .books-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 40px;
+    }
+
+    .books-table th,
+    .books-table td {
+      padding: 15px;
+      text-align: left;
+    }
+
+    .books-table th {
+      background-color: var(--table-header-bg);
+      color: var(--accent-color);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .books-table tbody tr {
+      background-color: var(--light-bg);
+      border-bottom: 1px solid #333333;
+      transition: background-color 0.3s;
+    }
+
+    .books-table tbody tr:hover {
+      background-color: var(--table-row-hover);
+    }
+
+    .books-table tbody td {
+      color: var(--text-color);
+    }
+
+    .books-table tbody td input[type="date"],
+    .books-table tbody td input[type="checkbox"] {
+      background-color: #1a1a1a;
+      color: #e0e0e0;
+      border: 1px solid #444444;
+      padding: 5px;
+      border-radius: 4px;
+    }
+
+    .books-table tbody td input[type="checkbox"] {
+      transform: scale(1.2);
+      cursor: pointer;
+    }
+
+    /* Load & Save Buttons */
+    .load-save-buttons {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .load-save-buttons button {
+      background-color: var(--accent-color);
+      color: #0d0d0d;
+      border: none;
+      padding: 10px 20px;
+      margin: 0 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .load-save-buttons button:hover {
+      background-color: var(--button-hover-bg);
+      transform: scale(1.05);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #0d0d0d;
+      color: #b3b3b3;
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      nav {
+        padding: 15px 40px;
+      }
+
+      .section {
+        padding: 60px 30px;
+      }
+
+      .hero-content h1 {
+        font-size: 2.5rem;
+      }
+
+      .section h2 {
+        font-size: 2rem;
+      }
+
+      .books-table th,
+      .books-table td {
+        padding: 10px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        align-items: center;
+        padding: 15px 30px;
+      }
+
+      nav ul {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .books-table th,
+      .books-table td {
+        padding: 8px;
+      }
+
+      .load-save-buttons button {
+        margin: 10px 0;
+        width: 80%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .books-table thead {
+        display: none;
+      }
+
+      .books-table,
+      .books-table tbody,
+      .books-table tr,
+      .books-table td {
+        display: block;
+        width: 100%;
+      }
+
+      .books-table tr {
+        margin-bottom: 15px;
+      }
+
+      .books-table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+      }
+
+      .books-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: 600;
+        color: var(--accent-color);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav>
+    <a href="#hero" class="logo">Smart Investing Guide</a>
+    <ul>
+      <li><a href="#hero">Dashboard</a></li>
+      <li><a href="#books">Books</a></li>
+      <li><a href="#data-management">Data Management</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="hero" class="hero">
+    <div class="hero-content">
+      <h1>Encyclopedia of Investment Wisdom</h1>
+      <p>Your guide to financial wisdom</p>
+    </div>
+  </section>
+
+  <!-- Books Section -->
+  <section id="books" class="section">
+    <h2>Top 31 Books Every Investor Must Read</h2>
+    <div id="booksContainer">
+      <!-- Tables will be dynamically injected here -->
+    </div>
+  </section>
+
+  <!-- Data Management Section -->
+  <section id="data-management" class="section">
+    <h2>Data Management</h2>
+    <div class="load-save-buttons">
+      <button onclick="saveData()">🌀 Save JSON</button>
+      <button onclick="loadData()">⬆ Load JSON</button>
+      <label for="fileInput" class="btn" style="display: none;">Upload JSON</label>
+      <input type="file" id="fileInput" accept=".json" onchange="handleFile(event)" style="display: none;" />
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; ❤ D.Nikey. Enthusiastic development </p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Initial Books Data
+    const booksData = [
+      {
+        category: "📈 Investment Basics",
+        books: [
+          {
+            number: 1,
+            title: "The Intelligent Investor",
+            authors: "Benjamin Graham",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 2,
+            title: "Security Analysis",
+            authors: "Benjamin Graham and David Dodd",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 3,
+            title: "The Little Book of Common Sense Investing",
+            authors: "John Bogle",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 4,
+            title: "Common Stocks and Uncommon Profits",
+            authors: "Philip Fisher",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 5,
+            title: "Beating the Street",
+            authors: "Peter Lynch",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 6,
+            title: "Learn to Earn",
+            authors: "Peter Lynch",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+        ],
+      },
+      {
+        category: "🌍 Financial Markets and Macroeconomics",
+        books: [
+          {
+            number: 7,
+            title: "Principles for Navigating Big Debt Crises",
+            authors: "Ray Dalio",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 8,
+            title: "Principles: Life and Work",
+            authors: "Ray Dalio",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 9,
+            title: "Market Wizards",
+            authors: "Jack Schwager",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 10,
+            title: "Reminiscences of a Stock Operator",
+            authors: "Edwin Lefèvre",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 11,
+            title: "A Random Walk Down Wall Street",
+            authors: "Burton Malkiel",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+        ],
+      },
+      // ... Add remaining categories and books similarly
+      {
+        category: "🔬 Fundamental Analysis",
+        books: [
+          {
+            number: 12,
+            title: "Fundamental Analysis for Professionals",
+            authors: "James Montier",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 13,
+            title: "Common Stocks and Uncommon Profits",
+            authors: "Philip Fisher",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 14,
+            title: "The Little Book That Beats the Market",
+            authors: "Joel Greenblatt",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+        ],
+      },
+      {
+        category: "💰 Capital Management",
+        books: [
+          {
+            number: 15,
+            title: "The Most Important Thing",
+            authors: "Howard Marks",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 16,
+            title: "Margin of Safety",
+            authors: "Seth Klarman",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 17,
+            title: "The Intelligent Asset Allocator",
+            authors: "William Bernstein",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+        ],
+      },
+      {
+        category: "🧠 Behavioral Finance",
+        books: [
+          {
+            number: 18,
+            title: "Thinking, Fast and Slow",
+            authors: "Daniel Kahneman",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 19,
+            title: "Nudge",
+            authors: "Richard Thaler",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 20,
+            title: "The Black Swan",
+            authors: "Nassim Nicholas Taleb",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 21,
+            title: "Fooled by Randomness",
+            authors: "Nassim Nicholas Taleb",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+        ],
+      },
+      {
+        category: "🏘️ Real Estate Investing",
+        books: [
+          {
+            number: 22,
+            title: "The Millionaire Real Estate Investor",
+            authors: "Gary Keller",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+        ],
+      },
+      {
+        category: "💼 Business Investing",
+        books: [
+          {
+            number: 23,
+            title: "Berkshire Hathaway Letters to Shareholders",
+            authors: "Warren Buffett",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 24,
+            title: "Economics: The User's Guide",
+            authors: "Ha-Joon Chang",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 25,
+            title: "Bad Samaritans: The Myth of Free Trade and the Secret History of Capitalism",
+            authors: "Ha-Joon Chang",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+        ],
+      },
+      {
+        category: "🌐 Modern Technologies and Investing",
+        books: [
+          {
+            number: 26,
+            title: "Investing in Innovation",
+            authors: "Cathie Wood",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 27,
+            title: "Investing in Blockchain and Cryptocurrencies",
+            authors: "Chris Brown",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+        ],
+      },
+      {
+        category: "💡 Ethics and Philosophy of Investing",
+        books: [
+          {
+            number: 28,
+            title: "Laws of Life",
+            authors: "John Templeton",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 29,
+            title: "The Little Book of Common Sense Investing",
+            authors: "John Bogle",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+        ],
+      },
+      {
+        category: "🎲 Miscellaneous",
+        books: [
+          {
+            number: 30,
+            title: "Dark Data",
+            authors: "David Hand",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+          {
+            number: 31,
+            title: "The Psychology of Money",
+            authors: "Morgan Housel",
+            startDate: "",
+            finishDate: "",
+            metrics: {},
+          },
+        ],
+      },
+    ];
+
+    // Function to render books as tables
+    function renderBooks() {
+      const container = document.getElementById("booksContainer");
+      container.innerHTML = "";
+
+      booksData.forEach((category) => {
+        // Category Title
+        const categoryTitle = document.createElement("h3");
+        categoryTitle.style.color = "var(--accent-color)";
+        categoryTitle.style.marginBottom = "20px";
+        categoryTitle.textContent = category.category;
+        container.appendChild(categoryTitle);
+
+        // Create Table
+        const table = document.createElement("table");
+        table.classList.add("books-table");
+
+        // Table Header
+        const thead = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+        const headers = ["№", "Title", "Authors", "Start Date", "Finish Date", "Read"];
+
+        headers.forEach((headerText) => {
+          const th = document.createElement("th");
+          th.textContent = headerText;
+          headerRow.appendChild(th);
+        });
+
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // Table Body
+        const tbody = document.createElement("tbody");
+
+        category.books.forEach((book) => {
+          const row = document.createElement("tr");
+
+          // Number
+          const numberCell = document.createElement("td");
+          numberCell.setAttribute("data-label", "№");
+          numberCell.textContent = book.number;
+          row.appendChild(numberCell);
+
+          // Title
+          const titleCell = document.createElement("td");
+          titleCell.setAttribute("data-label", "Title");
+          titleCell.textContent = book.title;
+          row.appendChild(titleCell);
+
+          // Authors
+          const authorsCell = document.createElement("td");
+          authorsCell.setAttribute("data-label", "Authors");
+          authorsCell.textContent = book.authors;
+          row.appendChild(authorsCell);
+
+          // Start Date
+          const startDateCell = document.createElement("td");
+          startDateCell.setAttribute("data-label", "Start Date");
+          const startInput = document.createElement("input");
+          startInput.type = "date";
+          startInput.id = `start-${book.number}`;
+          startInput.value = book.startDate;
+          startInput.dataset.bookNumber = book.number;
+          startDateCell.appendChild(startInput);
+          row.appendChild(startDateCell);
+
+          // Finish Date
+          const finishDateCell = document.createElement("td");
+          finishDateCell.setAttribute("data-label", "Finish Date");
+          const finishInput = document.createElement("input");
+          finishInput.type = "date";
+          finishInput.id = `finish-${book.number}`;
+          finishInput.value = book.finishDate;
+          finishInput.dataset.bookNumber = book.number;
+          finishDateCell.appendChild(finishInput);
+          row.appendChild(finishDateCell);
+
+          // Read Checkbox
+          const readCell = document.createElement("td");
+          readCell.setAttribute("data-label", "Read");
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.id = `read-${book.number}`;
+          checkbox.checked = book.metrics.read || false;
+          checkbox.dataset.bookNumber = book.number;
+          readCell.appendChild(checkbox);
+          row.appendChild(readCell);
+
+          tbody.appendChild(row);
+        });
+
+        table.appendChild(tbody);
+        container.appendChild(table);
+      });
+    }
+
+    // Save Data to JSON
+    function saveData() {
+      // Update booksData with current input values
+      booksData.forEach((category) => {
+        category.books.forEach((book) => {
+          const start = document.getElementById(`start-${book.number}`);
+          const finish = document.getElementById(`finish-${book.number}`);
+          const read = document.getElementById(`read-${book.number}`);
+
+          if (start && finish && read) {
+            book.startDate = start.value;
+            book.finishDate = finish.value;
+            book.metrics.read = read.checked;
+          }
+        });
+      });
+
+      const dataStr = JSON.stringify(booksData, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "investor_library_data.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Load Data from JSON
+    function loadData() {
+      const fileInput = document.getElementById("fileInput");
+      fileInput.click();
+    }
+
+    function handleFile(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const loadedData = JSON.parse(e.target.result);
+            if (Array.isArray(loadedData)) {
+              // Update booksData with loaded data
+              loadedData.forEach((loadedCategory) => {
+                const category = booksData.find(
+                  (cat) => cat.category === loadedCategory.category
+                );
+                if (category) {
+                  loadedCategory.books.forEach((loadedBook) => {
+                    const book = category.books.find(
+                      (b) => b.number === loadedBook.number
+                    );
+                    if (book) {
+                      book.startDate = loadedBook.startDate || "";
+                      book.finishDate = loadedBook.finishDate || "";
+                      book.metrics.read = loadedBook.metrics.read || false;
+                    }
+                  });
+                }
+              });
+              renderBooks();
+              alert("Data successfully uploaded!☘");
+            } else {
+              alert("Invalid JSON format.🛟");
+            }
+          } catch (error) {
+            alert("💥 File upload error.");
+            console.error(error);
+          }
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    // Event Listeners for inputs
+    function addEventListeners() {
+      booksData.forEach((category) => {
+        category.books.forEach((book) => {
+          const startInput = document.getElementById(`start-${book.number}`);
+          const finishInput = document.getElementById(`finish-${book.number}`);
+          const readCheckbox = document.getElementById(`read-${book.number}`);
+
+          if (startInput) {
+            startInput.addEventListener("change", (e) => {
+              book.startDate = e.target.value;
+            });
+          }
+
+          if (finishInput) {
+            finishInput.addEventListener("change", (e) => {
+              book.finishDate = e.target.value;
+            });
+          }
+
+          if (readCheckbox) {
+            readCheckbox.addEventListener("change", (e) => {
+              book.metrics.read = e.target.checked;
+            });
+          }
+        });
+      });
+    }
+
+    // Navbar background change on scroll
+    window.addEventListener("scroll", () => {
+      const navbar = document.querySelector("nav");
+      if (window.scrollY > 50) {
+        navbar.classList.add("scrolled");
+      } else {
+        navbar.classList.remove("scrolled");
+      }
+    });
+
+    // Smooth scrolling for anchor links
+    const links = document.querySelectorAll('nav a[href^="#"]');
+    for (const link of links) {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute("href"));
+        target.scrollIntoView({
+          behavior: "smooth",
+        });
+      });
+    }
+
+    // Initialize
+    window.onload = function () {
+      renderBooks();
+      addEventListeners();
+    };
+  </script>
+</body>
+
+</html>
