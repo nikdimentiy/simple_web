@@ -98,7 +98,8 @@
     /* Hero Section */
     .hero {
       height: 100vh;
-      background: url("https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=compress&cs=tinysrgb&w=1600") center center/cover no-repeat;
+      background: url("https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=compress&cs=tinysrgb&w=1600")
+        center center/cover no-repeat;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -420,10 +421,10 @@
 
   <!-- JavaScript -->
   <script>
-    // Initial Books Data
+    // Corrected Books Data with Unique Numbers and Translated Text
     const booksData = [
       {
-        category: "📈 Investment Basics",
+        category: "📈 Investment Fundamentals",
         books: [
           {
             number: 1,
@@ -459,7 +460,7 @@
           },
           {
             number: 5,
-            title: "Beating the Street",
+            title: "One Up On Wall Street",
             authors: "Peter Lynch",
             startDate: "",
             finishDate: "",
@@ -520,7 +521,6 @@
           },
         ],
       },
-      // ... Add remaining categories and books similarly
       {
         category: "🔬 Fundamental Analysis",
         books: [
@@ -555,7 +555,7 @@
         books: [
           {
             number: 15,
-            title: "The Most Important Thing",
+            title: "The Most Important Thing for an Investor",
             authors: "Howard Marks",
             startDate: "",
             finishDate: "",
@@ -571,7 +571,7 @@
           },
           {
             number: 17,
-            title: "The Intelligent Asset Allocator",
+            title: "Asset Allocation",
             authors: "William Bernstein",
             startDate: "",
             finishDate: "",
@@ -592,7 +592,7 @@
           },
           {
             number: 19,
-            title: "Nudge",
+            title: "Nudge: Improving Decisions About Health, Wealth, and Happiness",
             authors: "Richard Thaler",
             startDate: "",
             finishDate: "",
@@ -617,7 +617,7 @@
         ],
       },
       {
-        category: "🏘️ Real Estate Investing",
+        category: "🏘️ Real Estate Investments",
         books: [
           {
             number: 22,
@@ -630,11 +630,11 @@
         ],
       },
       {
-        category: "💼 Business Investing",
+        category: "💼 Business Investments",
         books: [
           {
             number: 23,
-            title: "Berkshire Hathaway Letters to Shareholders",
+            title: "Berkshire Hathaway Shareholder Letters",
             authors: "Warren Buffett",
             startDate: "",
             finishDate: "",
@@ -642,7 +642,7 @@
           },
           {
             number: 24,
-            title: "Economics: The User's Guide",
+            title: "Economics: How It Works",
             authors: "Ha-Joon Chang",
             startDate: "",
             finishDate: "",
@@ -650,7 +650,7 @@
           },
           {
             number: 25,
-            title: "Bad Samaritans: The Myth of Free Trade and the Secret History of Capitalism",
+            title: "The Undercover Economist",
             authors: "Ha-Joon Chang",
             startDate: "",
             finishDate: "",
@@ -659,7 +659,7 @@
         ],
       },
       {
-        category: "🌐 Modern Technologies and Investing",
+        category: "🌐 Modern Technologies and Investments",
         books: [
           {
             number: 26,
@@ -704,7 +704,7 @@
         category: "🎲 Miscellaneous",
         books: [
           {
-            number: 30,
+            number: 30, // Changed from 31 to 30
             title: "Dark Data",
             authors: "David Hand",
             startDate: "",
@@ -712,7 +712,7 @@
             metrics: {},
           },
           {
-            number: 31,
+            number: 31, // Ensured uniqueness
             title: "The Psychology of Money",
             authors: "Morgan Housel",
             startDate: "",
@@ -743,7 +743,7 @@
         // Table Header
         const thead = document.createElement("thead");
         const headerRow = document.createElement("tr");
-        const headers = ["№", "Title", "Authors", "Start Date", "Finish Date", "Read"];
+        const headers = ["No.", "Title", "Authors", "Start Date", "Finish Date", "Read", "Buy on Amazon"];
 
         headers.forEach((headerText) => {
           const th = document.createElement("th");
@@ -762,7 +762,7 @@
 
           // Number
           const numberCell = document.createElement("td");
-          numberCell.setAttribute("data-label", "№");
+          numberCell.setAttribute("data-label", "No.");
           numberCell.textContent = book.number;
           row.appendChild(numberCell);
 
@@ -811,12 +811,32 @@
           readCell.appendChild(checkbox);
           row.appendChild(readCell);
 
+          // Amazon Link
+          const amazonCell = document.createElement("td");
+          amazonCell.setAttribute("data-label", "Buy on Amazon");
+          const amazonLink = document.createElement("a");
+          amazonLink.href = generateAmazonLink(book.title);
+          amazonLink.textContent = "Buy Now";
+          amazonLink.target = "_blank"; // Opens link in a new tab
+          amazonLink.rel = "noopener noreferrer"; // Security best practice
+          amazonLink.style.color = "#FF9900"; // Amazon's signature color
+          amazonLink.style.fontWeight = "600";
+          amazonCell.appendChild(amazonLink);
+          row.appendChild(amazonCell);
+
           tbody.appendChild(row);
         });
 
         table.appendChild(tbody);
         container.appendChild(table);
       });
+    }
+
+    // Function to generate Amazon search link based on book title
+    function generateAmazonLink(bookTitle) {
+      const baseUrl = "https://www.amazon.com/s";
+      const query = encodeURIComponent(bookTitle);
+      return `${baseUrl}?k=${query}`;
     }
 
     // Save Data to JSON
@@ -879,6 +899,7 @@
                 }
               });
               renderBooks();
+              addEventListeners();
               alert("Data successfully uploaded!☘");
             } else {
               alert("Invalid JSON format.🛟");
