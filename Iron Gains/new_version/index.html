@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IRON GAINS Dashboard</title>
+    <!-- Font imports -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+      /* Reset and base styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Roboto", sans-serif;
+        background-color: #121212;
+        color: #f0f0f0;
+        line-height: 1.6;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      /* Celtic-inspired patterns */
+      .celtic-border {
+        border: 2px solid #4caf50;
+        border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><path d="M0,5 L10,5 M5,0 L5,10" stroke="%234CAF50" stroke-width="1"/></svg>')
+          10 stretch;
+      }
+
+      /* Navbar */
+      .navbar {
+        background-color: #1e1e1e;
+        padding: 20px;
+        text-align: center;
+        border-bottom: 2px solid #4caf50;
+      }
+
+      .navbar h1 {
+        font-family: "Bebas Neue", cursive;
+        font-size: 2.5rem;
+        color: #4caf50;
+        margin-bottom: 10px;
+      }
+
+      .navbar .motto {
+        font-size: 1rem;
+        font-style: italic;
+        color: #a5d6a7;
+      }
+
+      /* Dashboard Grid */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        padding: 20px;
+      }
+
+      /* Metric Cards */
+      .metric-card {
+        background-color: #1e1e1e;
+        padding: 20px;
+        border-radius: 10px;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s;
+      }
+
+      .metric-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .metric-card::before {
+        content: "";
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        width: 30px;
+        height: 30px;
+        background-color: #4caf50;
+        transform: rotate(45deg);
+        border-radius: 2px;
+      }
+
+      .metric-label {
+        font-size: 1rem;
+        margin-bottom: 10px;
+        color: #a5d6a7;
+      }
+
+      .metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #ffffff;
+      }
+
+      .metric-icon {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 1.5rem;
+        color: #4caf50;
+      }
+
+      /* Cards */
+      .card {
+        background-color: #1e1e1e;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #4caf50;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        margin: 20px;
+      }
+
+      .card h2 {
+        font-family: "Bebas Neue", cursive;
+        font-size: 1.8rem;
+        color: #4caf50;
+        margin-bottom: 15px;
+        position: relative;
+      }
+
+      .card h2::after {
+        content: "";
+        width: 50px;
+        height: 3px;
+        background-color: #4caf50;
+        display: block;
+        margin-top: 5px;
+        border-radius: 2px;
+      }
+
+      /* Forms */
+      .split-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group label {
+        margin-bottom: 5px;
+        color: #a5d6a7;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        padding: 10px;
+        border: 1px solid #4caf50;
+        border-radius: 5px;
+        background-color: #2c2c2c;
+        color: #f0f0f0;
+        font-size: 1rem;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #81c784;
+      }
+
+      .notes-group textarea {
+        resize: vertical;
+      }
+
+      /* Buttons */
+      .button-group {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .primary-button,
+      .secondary-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        transition: background-color 0.3s;
+      }
+
+      .primary-button {
+        background-color: #4caf50;
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background-color: #66bb6a;
+      }
+
+      .secondary-button {
+        background-color: #424242;
+        color: #f0f0f0;
+      }
+
+      .secondary-button:hover {
+        background-color: #616161;
+      }
+
+      .button-icon {
+        margin-right: 5px;
+        font-size: 1.2rem;
+      }
+
+      /* Tables */
+      .table-container {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      table th,
+      table td {
+        padding: 12px 15px;
+        border: 1px solid #4caf50;
+        text-align: center;
+      }
+
+      table th {
+        background-color: #2c2c2c;
+        color: #4caf50;
+        font-weight: bold;
+      }
+
+      table tbody tr:nth-child(even) {
+        background-color: #1e1e1e;
+      }
+
+      table tbody tr:hover {
+        background-color: #333333;
+      }
+
+      /* Notification */
+      .notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+      }
+
+      .notification {
+        background-color: #424242;
+        color: #f0f0f0;
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        border-left: 5px solid #4caf50;
+        border-radius: 3px;
+        min-width: 250px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        animation: fadein 0.5s, fadeout 0.5s 3.5s;
+      }
+
+      @keyframes fadein {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeout {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        to {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+      }
+
+      /* Loading Overlay */
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+      }
+
+      .loading-content {
+        text-align: center;
+        color: #4caf50;
+      }
+
+      .loading-spinner {
+        border: 8px solid #f3f3f3;
+        border-top: 8px solid #4caf50;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading-text {
+        font-size: 1.2rem;
+      }
+
+      /* Footer */
+      .footer {
+        background-color: #1e1e1e;
+        text-align: center;
+        padding: 20px;
+        border-top: 2px solid #4caf50;
+      }
+
+      .footer p {
+        margin: 5px 0;
+        color: #a5d6a7;
+      }
+
+      .footer-version {
+        font-size: 0.9rem;
+        color: #81c784;
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 768px) {
+        .navbar h1 {
+          font-size: 2rem;
+        }
+
+        .dashboard-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .split-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <div class="navbar">
+      <h1>IRON GAINS Dashboard</h1>
+      <p class="motto">
+        "The last three or four reps is what makes the muscle grow. This area of
+        pain divides a champion from someone who is not a champion." - Arnold
+        Schwarzenegger
+      </p>
+    </div>
+
+    <!-- Metrics Dashboard -->
+    <div class="dashboard-grid">
+      <div class="card metric-card">
+        <div class="metric-label">Weekly Volume</div>
+        <div id="weeklyVolume" class="metric-value">0</div>
+        <div class="metric-label">Total Sets</div>
+        <div class="metric-icon">🏋️‍♂️</div>
+      </div>
+
+      <div class="card metric-card">
+        <div class="metric-label">Personal Records</div>
+        <div id="prCount" class="metric-value">0</div>
+        <div class="metric-label">This Month</div>
+        <div class="metric-icon">🏆</div>
+      </div>
+
+      <div class="card metric-card">
+        <div class="metric-label">Workout Streak</div>
+        <div id="workoutStreak" class="metric-value">0</div>
+        <div class="metric-label">Days</div>
+        <div class="metric-icon">🔥</div>
+      </div>
+    </div>
+
+    <!-- Log Workout -->
+    <div class="card celtic-border">
+      <h2>LOG WORKOUT</h2>
+      <div class="split-grid">
+        <div class="form-group">
+          <label>📅 Date:</label>
+          <input type="date" id="workoutDate" />
+        </div>
+        <div class="form-group">
+          <label>💪 Muscle Group:</label>
+          <select id="muscleGroup" onchange="updateExerciseList()">
+            <option value="">Select Muscle Group</option>
+            <option value="chest">1. Chest (Pectorals)</option>
+            <option value="back">2. Back</option>
+            <option value="shoulders">3. Shoulders (Deltoids)</option>
+            <option value="arms">4. Arms</option>
+            <option value="abs">5. Abdominals (Core)</option>
+            <option value="legs">6. Legs</option>
+            <option value="hips">7. Hip Muscles</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>🎯 Exercise:</label>
+          <select id="exercise">
+            <option value="">Select Exercise</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>⚖️ Weight (lbs):</label>
+          <input type="number" id="weight" min="0" step="2.5" />
+        </div>
+        <div class="form-group">
+          <label>🔄 Sets:</label>
+          <input type="number" id="sets" min="1" max="10" />
+        </div>
+        <div class="form-group">
+          <label>🔢 Reps:</label>
+          <input type="number" id="reps" min="1" max="30" />
+        </div>
+        <div class="form-group notes-group">
+          <label>📝 Notes:</label>
+          <textarea
+            id="notes"
+            rows="3"
+            placeholder="How was your workout? Any achievements or challenges?"
+          ></textarea>
+        </div>
+      </div>
+      <div class="button-group">
+        <button onclick="logWorkout()" class="primary-button">
+          <span class="button-icon">💪</span>
+          LOG SET
+        </button>
+        <button onclick="exportToCSV()" class="secondary-button">
+          <span class="button-icon">📤</span>
+          EXPORT TO CSV
+        </button>
+        <button onclick="importFromCSV()" class="secondary-button">
+          <span class="button-icon">📥</span>
+          IMPORT FROM CSV
+        </button>
+        <input
+          type="file"
+          id="csvFileInput"
+          accept=".csv"
+          style="display: none"
+          onchange="handleFileSelect(event)"
+        />
+      </div>
+    </div>
+
+    <!-- Personal Records -->
+    <div class="card celtic-border">
+      <h2>PERSONAL RECORDS 🏆</h2>
+      <div id="prTable" class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Exercise</th>
+              <th>Max Weight (kg)</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Personal records will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Workout Log -->
+    <div class="card celtic-border">
+      <h2>WORKOUT LOG 📋</h2>
+      <div class="table-container">
+        <table id="workoutLog">
+          <thead>
+            <tr>
+              <th>DATE</th>
+              <th>EXERCISE</th>
+              <th>WEIGHT</th>
+              <th>SETS</th>
+              <th>REPS</th>
+              <th>VOLUME</th>
+              <th>NOTES</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Workout logs will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading your gains...</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>💪 Stay Strong, Keep Growing 💪</p>
+      <p class="footer-version">IRON GAINS Dashboard v1.0</p>
+    </footer>
+
+    <!-- Custom JavaScript -->
+    <script>
+      // Sample exercises based on muscle groups
+      const exercises = {
+        chest: ["Bench Press", "Incline Dumbbell Press", "Chest Fly"],
+        back: ["Deadlift", "Pull-Up", "Bent Over Row"],
+        shoulders: ["Overhead Press", "Lateral Raise", "Front Raise"],
+        arms: ["Bicep Curl", "Tricep Extension", "Hammer Curl"],
+        abs: ["Plank", "Crunches", "Leg Raises"],
+        legs: ["Squat", "Lunges", "Leg Press"],
+        hips: ["Hip Thrust", "Glute Bridge", "Cable Kickback"],
+      };
+
+      // Data storage
+      let workoutData = [];
+      let personalRecords = {};
+
+      // Initialize Dashboard
+      document.addEventListener("DOMContentLoaded", () => {
+        loadData();
+        updateMetrics();
+      });
+
+      // Update Exercise List based on Muscle Group
+      function updateExerciseList() {
+        const muscleGroup = document.getElementById("muscleGroup").value;
+        const exerciseSelect = document.getElementById("exercise");
+        exerciseSelect.innerHTML = '<option value="">Select Exercise</option>';
+        if (exercises[muscleGroup]) {
+          exercises[muscleGroup].forEach((ex) => {
+            const option = document.createElement("option");
+            option.value = ex;
+            option.textContent = ex;
+            exerciseSelect.appendChild(option);
+          });
+        }
+      }
+
+      // Log Workout
+      function logWorkout() {
+        const date = document.getElementById("workoutDate").value;
+        const muscleGroup = document.getElementById("muscleGroup").value;
+        const exercise = document.getElementById("exercise").value;
+        const weight = parseFloat(document.getElementById("weight").value);
+        const sets = parseInt(document.getElementById("sets").value);
+        const reps = parseInt(document.getElementById("reps").value);
+        const notes = document.getElementById("notes").value;
+
+        if (
+          !date ||
+          !muscleGroup ||
+          !exercise ||
+          isNaN(weight) ||
+          isNaN(sets) ||
+          isNaN(reps)
+        ) {
+          showNotification("Please fill in all required fields.", "error");
+          return;
+        }
+
+        const volume = weight * sets * reps;
+
+        const workoutEntry = {
+          date,
+          muscleGroup,
+          exercise,
+          weight,
+          sets,
+          reps,
+          volume,
+          notes,
+        };
+
+        workoutData.push(workoutEntry);
+        saveData();
+        appendWorkoutToTable(workoutEntry);
+        updateMetrics();
+        updatePersonalRecords(workoutEntry);
+        appendPRToTable(workoutEntry);
+        showNotification("Workout logged successfully!", "success");
+        clearForm();
+      }
+
+      // Clear Form
+      function clearForm() {
+        document.getElementById("workoutDate").value = "";
+        document.getElementById("muscleGroup").value = "";
+        document.getElementById("exercise").innerHTML =
+          '<option value="">Select Exercise</option>';
+        document.getElementById("weight").value = "";
+        document.getElementById("sets").value = "";
+        document.getElementById("reps").value = "";
+        document.getElementById("notes").value = "";
+      }
+
+      // Append Workout to Table
+      function appendWorkoutToTable(entry) {
+        const tbody = document.querySelector("#workoutLog tbody");
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+                <td>${entry.date}</td>
+                <td>${entry.exercise}</td>
+                <td>${entry.weight}</td>
+                <td>${entry.sets}</td>
+                <td>${entry.reps}</td>
+                <td>${entry.volume}</td>
+                <td>${entry.notes}</td>
+            `;
+
+        tbody.appendChild(row);
+      }
+
+      // Update Metrics
+      function updateMetrics() {
+        // Weekly Volume
+        const currentWeek = getCurrentWeekDates();
+        const weeklyVolume = workoutData
+          .filter((entry) => currentWeek.includes(entry.date))
+          .reduce((acc, curr) => acc + curr.volume, 0);
+        document.getElementById("weeklyVolume").textContent = weeklyVolume;
+
+        // Personal Records Count
+        document.getElementById("prCount").textContent =
+          Object.keys(personalRecords).length;
+
+        // Workout Streak
+        const sortedDates = workoutData.map((entry) => entry.date).sort();
+        let streak = 0;
+        let today = new Date();
+        today.setHours(0, 0, 0, 0);
+        for (let i = sortedDates.length - 1; i >= 0; i--) {
+          const workoutDate = new Date(sortedDates[i]);
+          const diffTime = today - workoutDate;
+          const diffDays = diffTime / (1000 * 60 * 60 * 24);
+          if (diffDays === streak) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+        document.getElementById("workoutStreak").textContent = streak;
+      }
+
+      // Get Current Week Dates
+      function getCurrentWeekDates() {
+        const today = new Date();
+        const first = today.getDate() - today.getDay();
+        const dates = [];
+        for (let i = 0; i < 7; i++) {
+          const date = new Date(today.setDate(first + i));
+          const formatted = date.toISOString().split("T")[0];
+          dates.push(formatted);
+        }
+        return dates;
+      }
+
+      // Update Personal Records
+      function updatePersonalRecords(entry) {
+        if (
+          !personalRecords[entry.exercise] ||
+          entry.weight > personalRecords[entry.exercise].weight
+        ) {
+          personalRecords[entry.exercise] = {
+            weight: entry.weight,
+            date: entry.date,
+          };
+          saveData();
+        }
+      }
+
+      // Append PR to Table
+      function appendPRToTable(entry) {
+        if (personalRecords[entry.exercise].weight === entry.weight) {
+          const tbody = document.querySelector("#prTable tbody");
+          const existingRow = Array.from(tbody.children).find(
+            (row) => row.firstChild.textContent === entry.exercise
+          );
+          if (existingRow) {
+            existingRow.children[1].textContent = entry.weight;
+            existingRow.children[2].textContent = entry.date;
+          } else {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                        <td>${entry.exercise}</td>
+                        <td>${entry.weight}</td>
+                        <td>${entry.date}</td>
+                    `;
+            tbody.appendChild(row);
+          }
+        }
+      }
+
+      // Save Data to Local Storage
+      function saveData() {
+        localStorage.setItem("workoutData", JSON.stringify(workoutData));
+        localStorage.setItem(
+          "personalRecords",
+          JSON.stringify(personalRecords)
+        );
+      }
+
+      // Load Data from Local Storage
+      function loadData() {
+        const storedWorkoutData =
+          JSON.parse(localStorage.getItem("workoutData")) || [];
+        const storedPR =
+          JSON.parse(localStorage.getItem("personalRecords")) || {};
+        workoutData = storedWorkoutData;
+        personalRecords = storedPR;
+
+        workoutData.forEach((entry) => {
+          appendWorkoutToTable(entry);
+        });
+
+        for (const exercise in personalRecords) {
+          const pr = personalRecords[exercise];
+          const tbody = document.querySelector("#prTable tbody");
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                    <td>${exercise}</td>
+                    <td>${pr.weight}</td>
+                    <td>${pr.date}</td>
+                `;
+          tbody.appendChild(row);
+        }
+      }
+
+      // Export to CSV
+      function exportToCSV() {
+        if (workoutData.length === 0) {
+          showNotification("No data to export.", "error");
+          return;
+        }
+
+        const headers = [
+          "Date",
+          "Muscle Group",
+          "Exercise",
+          "Weight (kg)",
+          "Sets",
+          "Reps",
+          "Volume",
+          "Notes",
+        ];
+        const rows = workoutData.map((entry) => [
+          entry.date,
+          entry.muscleGroup,
+          entry.exercise,
+          entry.weight,
+          entry.sets,
+          entry.reps,
+          entry.volume,
+          entry.notes.replace(/,/g, ";"), // Replace commas to prevent CSV issues
+        ]);
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += headers.join(",") + "\n";
+        rows.forEach((row) => {
+          csvContent += row.join(",") + "\n";
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "iron_gains_workout_log.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showNotification("Data exported successfully!", "success");
+      }
+
+      // Import from CSV
+      function importFromCSV() {
+        document.getElementById("csvFileInput").click();
+      }
+
+      // Handle File Select
+      function handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (!file) {
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const content = e.target.result;
+          parseCSV(content);
+        };
+        reader.readAsText(file);
+      }
+
+      // Parse CSV
+      function parseCSV(content) {
+        const lines = content.split("\n").filter((line) => line.trim() !== "");
+        const headers = lines[0].split(",").map((h) => h.trim());
+        const newData = [];
+
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(",").map((v) => v.trim());
+          if (values.length !== headers.length) continue;
+
+          const entry = {
+            date: values[0],
+            muscleGroup: values[1].toLowerCase(),
+            exercise: values[2],
+            weight: parseFloat(values[3]),
+            sets: parseInt(values[4]),
+            reps: parseInt(values[5]),
+            volume: parseFloat(values[6]),
+            notes: values[7],
+          };
+
+          newData.push(entry);
+        }
+
+        workoutData = workoutData.concat(newData);
+        saveData();
+        refreshTables();
+        updateMetrics();
+        showNotification("Data imported successfully!", "success");
+      }
+
+      // Refresh Tables
+      function refreshTables() {
+        // Clear tables
+        document.querySelector("#workoutLog tbody").innerHTML = "";
+        document.querySelector("#prTable tbody").innerHTML = "";
+
+        // Re-populate tables
+        workoutData.forEach((entry) => {
+          appendWorkoutToTable(entry);
+          updatePersonalRecords(entry);
+        });
+
+        for (const exercise in personalRecords) {
+          const pr = personalRecords[exercise];
+          const tbody = document.querySelector("#prTable tbody");
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                    <td>${exercise}</td>
+                    <td>${pr.weight}</td>
+                    <td>${pr.date}</td>
+                `;
+          tbody.appendChild(row);
+        }
+      }
+
+      // Show Notification
+      function showNotification(message, type) {
+        const container = document.getElementById("notificationContainer");
+        const notification = document.createElement("div");
+        notification.classList.add("notification");
+        if (type === "success") {
+          notification.style.borderLeftColor = "#81c784";
+        } else if (type === "error") {
+          notification.style.borderLeftColor = "#e57373";
+        }
+        notification.textContent = message;
+        container.appendChild(notification);
+        setTimeout(() => {
+          notification.remove();
+        }, 4000);
+      }
+
+      // Show Loading Overlay
+      function showLoading() {
+        document.getElementById("loadingOverlay").style.display = "flex";
+      }
+
+      // Hide Loading Overlay
+      function hideLoading() {
+        document.getElementById("loadingOverlay").style.display = "none";
+      }
+    </script>
+  </body>
+</html>
