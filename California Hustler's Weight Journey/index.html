@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CALIFORNIA HUSTLER'S WEIGHT JOURNEY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-orange: #FF6F61;
+            --accent-yellow: #FFD166;
+            --light-blue: #118AB2;
+            --dark-blue: #073B4C;
+            --highlight-green: #06D6A0;
+        }
+
+        body {
+            background-color: var(--dark-blue);
+            color: white;
+            min-height: 100vh;
+            padding: 2rem;
+            background-image:
+                linear-gradient(rgba(7, 59, 76, 0.95), rgba(7, 59, 76, 0.95)),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 30c15.5 0 28-12.5 28-28s-12.5-28-28-28-28 12.5-28 28 12.5 28 28 28zm0-4c13.3 0 24-10.7 24-24S43.3-22 30-22 6-11.3 6 2s10.7 24 24 24z' fill='%23118AB2' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        .hustler-border {
+            border: 3px solid var(--accent-yellow);
+            position: relative;
+        }
+
+        .hustler-border::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border: 2px solid var(--highlight-green);
+            z-index: -1;
+        }
+
+        .title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--accent-yellow);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .title::after {
+            content: '';
+            display: block;
+            width: 200px;
+            height: 4px;
+            background: var(--primary-orange);
+            margin: 10px auto;
+            position: relative;
+        }
+
+        .metric-card {
+            background: var(--light-blue);
+            border: 2px solid var(--accent-yellow);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 209, 102, 0.1));
+        }
+
+        .progress-container {
+            background: var(--light-blue);
+            height: 2.5rem;
+            border: 2px solid var(--accent-yellow);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-orange), var(--highlight-green));
+            transition: width 0.3s ease;
+        }
+
+        .hustler-button {
+            background: var(--primary-orange);
+            color: white;
+            border: 2px solid var(--accent-yellow);
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .hustler-button:hover {
+            background: var(--accent-yellow);
+            color: var(--dark-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 209, 102, 0.3);
+        }
+
+        .modal {
+            background: rgba(7, 59, 76, 0.98);
+        }
+
+        .modal-content {
+            background: var(--light-blue);
+            border: 2px solid var(--accent-yellow);
+        }
+
+        input {
+            background: var(--dark-blue);
+            border: 2px solid var(--accent-yellow);
+            color: white;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--highlight-green);
+            box-shadow: 0 0 0 2px rgba(6, 214, 160, 0.2);
+        }
+
+        .quote {
+            font-family: 'Roboto', sans-serif;
+            font-style: italic;
+            color: var(--accent-yellow);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: var(--light-blue);
+        }
+
+        .data-table th, .data-table td {
+            padding: 0.75rem;
+            border: 1px solid var(--accent-yellow);
+            text-align: center;
+        }
+
+        .data-table th {
+            background: var(--primary-orange);
+            color: white;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: rgba(255, 209, 102, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mx-auto max-w-6xl">
+        <header class="text-center mb-8">
+            <h1 class="title text-4xl md:text-5xl mb-4">California Hustler's Weight Journey</h1>
+            <p class="quote text-xl">"Stay hungry, stay hustling, stay healthy"</p>
+        </header>
+
+        <div class="progress-container mb-8">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="metric-card p-6 rounded-lg text-center">
+                <div class="text-lg uppercase tracking-wider mb-2">Current Weight</div>
+                <div class="text-3xl font-bold" id="currentWeight">194 lbs</div>
+            </div>
+            <div class="metric-card p-6 rounded-lg text-center">
+                <div class="text-lg uppercase tracking-wider mb-2">Hustler's Goal</div>
+                <div class="text-3xl font-bold" id="goalWeight">173.0 lbs</div>
+            </div>
+            <div class="metric-card p-6 rounded-lg text-center">
+                <div class="text-lg uppercase tracking-wider mb-2">Road Ahead</div>
+                <div class="text-3xl font-bold" id="weightToLose">21 lbs</div>
+            </div>
+            <div class="metric-card p-6 rounded-lg text-center">
+                <div class="text-lg uppercase tracking-wider mb-2">Journey's Progress</div>
+                <div class="text-3xl font-bold" id="progress">0%</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <button class="hustler-button py-4 px-6 rounded-lg" onclick="showAddWeightModal()">Log Weight</button>
+            <button class="hustler-button py-4 px-6 rounded-lg" onclick="importJSON()">Import Records</button>
+            <button class="hustler-button py-4 px-6 rounded-lg" onclick="exportJSON()">Export Records</button>
+            <button class="hustler-button py-4 px-6 rounded-lg" onclick="toggleHistory()">View History</button>
+        </div>
+
+        <div id="historySection" class="hidden mb-8">
+            <h2 class="text-2xl mb-4 font-montserrat text-center">Hustle History</h2>
+            <div class="overflow-x-auto">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Weight (lbs)</th>
+                            <th>Change</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer class="text-center mt-8">
+            <p class="quote text-xl mb-2">"Every hustle is a step closer to greatness"</p>
+            <p class="text-sm text-gray-400">- California Wisdom</p>
+        </footer>
+    </div>
+
+    <div class="modal hidden fixed inset-0 flex items-center justify-center" id="addWeightModal">
+        <div class="modal-content p-8 rounded-lg w-full max-w-md">
+            <h2 class="text-2xl text-center mb-6 font-montserrat">Track Your Hustle</h2>
+            <input type="number" id="weightInput" step="0.1" placeholder="Enter weight in lbs" class="w-full p-3 rounded-lg mb-6">
+            <div class="grid grid-cols-2 gap-4">
+                <button class="hustler-button py-3 px-6 rounded-lg" onclick="addWeight()">Log It</button>
+                <button class="hustler-button py-3 px-6 rounded-lg" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let weights = [];
+        const goalWeight = 173.0;
+        const startWeight = 194.0;
+
+        window.onload = function() {
+            loadWeights();
+            updateDisplay();
+        };
+
+        function loadWeights() {
+            const storedWeights = localStorage.getItem('weights');
+            if (storedWeights) {
+                try {
+                    weights = JSON.parse(storedWeights);
+                    // Ensure dates are parsed as UTC
+                    weights = weights.map(entry => ({
+                        ...entry,
+                        date: new Date(entry.date + 'T00:00:00Z').toISOString().split('T')[0] // Ensure date is in YYYY-MM-DD format
+                    }));
+                    weights.sort((a, b) => new Date(b.date) - new Date(a.date));
+                } catch (error) {
+                    console.error('Error parsing stored weights:', error);
+                    weights = [];
+                }
+            }
+            updateMetrics(weights.length > 0 ? weights[0].weight : startWeight);
+        }
+
+        function updateMetrics(currentWeight) {
+            const weightToLose = Math.max(0, (currentWeight - goalWeight)).toFixed(1);
+            const progress = Math.min(100, Math.max(0,
+                ((startWeight - currentWeight) / (startWeight - goalWeight)) * 100
+            )).toFixed(0);
+
+            document.getElementById('currentWeight').textContent = currentWeight + ' lbs';
+            document.getElementById('weightToLose').textContent = weightToLose + ' lbs';
+            document.getElementById('progress').textContent = progress + '%';
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function updateDisplay() {
+            if (weights.length > 0) {
+                updateMetrics(weights[0].weight);
+            } else {
+                updateMetrics(startWeight);
+            }
+            updateHistoryTable();
+        }
+
+        function updateHistoryTable() {
+            const tbody = document.getElementById('historyTableBody');
+            tbody.innerHTML = '';
+            
+            weights.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                const change = index < weights.length - 1
+                    ? (entry.weight - weights[index + 1].weight).toFixed(1)
+                    : '0.0';
+                const changeClass = change > 0 ? 'text-red-500' : change < 0 ? 'text-green-500' : '';
+                
+                // Format the date as UTC
+                const formattedDate = new Date(entry.date + 'T00:00:00Z').toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    timeZone: 'UTC' // Ensure the date is displayed in UTC
+                });
+                
+                row.innerHTML = `
+                    <td>${formattedDate}</td>
+                    <td>${entry.weight}</td>
+                    <td class="${changeClass}">${change > 0 ? '+' : ''}${change}</td>
+                    <td>
+                        <button onclick="deleteEntry('${entry.date}')"
+                                class="hustler-button py-1 px-3 rounded text-sm">
+                            Delete
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function deleteEntry(date) {
+            weights = weights.filter(entry => entry.date !== date);
+            localStorage.setItem('weights', JSON.stringify(weights));
+            updateDisplay();
+        }
+
+        function showAddWeightModal() {
+            document.getElementById('addWeightModal').style.display = 'flex';
+            document.getElementById('weightInput').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('addWeightModal').style.display = 'none';
+        }
+
+        function toggleHistory() {
+            const historySection = document.getElementById('historySection');
+            historySection.classList.toggle('hidden');
+        }
+
+        function addWeight() {
+            const weightInput = document.getElementById('weightInput');
+            const weight = parseFloat(weightInput.value);
+            if (!isNaN(weight) && weight > 0) {
+                const today = new Date().toISOString().split('T')[0]; // Store date in YYYY-MM-DD format
+
+                weights = weights.filter(entry => entry.date !== today);
+                weights.unshift({
+                    date: today,
+                    weight: weight
+                });
+
+                localStorage.setItem('weights', JSON.stringify(weights));
+
+                updateDisplay();
+                closeModal();
+                weightInput.value = '';
+            } else {
+                alert('Please enter a valid weight.');
+            }
+        }
+
+        function importJSON() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        const importedWeights = JSON.parse(event.target.result);
+                        if (Array.isArray(importedWeights)) {
+                            // Ensure dates are parsed as UTC
+                            weights = importedWeights.map(entry => ({
+                                ...entry,
+                                date: new Date(entry.date + 'T00:00:00Z').toISOString().split('T')[0] // Ensure date is in YYYY-MM-DD format
+                            }));
+                            weights.sort((a, b) => new Date(b.date) - new Date(a.date));
+                            localStorage.setItem('weights', JSON.stringify(weights));
+                            updateDisplay();
+                            alert('Records imported successfully.');
+                        } else {
+                            alert('Invalid JSON format. Expected an array of records.');
+                        }
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                        alert('Error parsing JSON file.');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function exportJSON() {
+            if (weights.length === 0) {
+                alert('No records to export.');
+                return;
+            }
+            const json = JSON.stringify(weights, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'weight-hustle.json');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('addWeightModal');
+             if (event.target === modal) {
+                closeModal();
+            }
+        };
+    </script>
+</body>
+</html>
