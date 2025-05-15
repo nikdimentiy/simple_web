@@ -1,0 +1,810 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hustler 2.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --color-rose-500: #f43f5e;
+            --color-rose-400: #fb7185;
+            --color-orange-400: #fb923c;
+            --color-amber-500: #f59e0b;
+            --color-amber-400: #fbbf24;
+            --color-emerald-500: #10b981;
+            --color-emerald-400: #34d399;
+            --color-blue-400: #60a5fa;
+            --color-purple-400: #c084fc;
+            --color-gray-900: #111827;
+            --color-gray-800: #1f2937;
+            --color-gray-700: #374151;
+            --color-gray-500: #6b7280;
+            --color-gray-400: #9ca3af;
+            --color-gray-300: #d1d5db;
+            --color-white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--color-gray-900), var(--color-gray-800), var(--color-gray-900));
+            color: var(--color-white);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            position: relative;
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid var(--color-gray-800);
+            background-color: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(8px);
+        }
+
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand-name {
+            font-size: 1.875rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--color-rose-500), var(--color-orange-400));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header-stats {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-pill {
+            display: flex;
+            align-items: center;
+            background-color: var(--color-gray-800);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+        }
+
+        .stat-pill i {
+            margin-right: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .stat-pill span {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Main content */
+        main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Stats Panel */
+        .stats-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .stats-panel {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .stat-card {
+            background-color: rgba(31, 41, 55, 0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--color-gray-700);
+            transition: border-color 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(244, 63, 94, 0.5);
+        }
+
+        .stat-card label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-gray-400);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card input {
+            width: 100%;
+            background-color: var(--color-gray-900);
+            border: 1px solid var(--color-gray-700);
+            color: var(--color-white);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .stat-card input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.5);
+            border-color: transparent;
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .progress-score {
+            color: var(--color-rose-500);
+            font-weight: 700;
+        }
+
+        .progress-bar-container {
+            height: 0.75rem;
+            background-color: var(--color-gray-800);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.5s, background-color 0.5s;
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.25rem;
+            font-size: 0.75rem;
+            color: var(--color-gray-500);
+        }
+
+        /* Missions Grid */
+        .missions-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .missions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .mission-card {
+            background-color: rgba(31, 41, 55, 0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            border: 1px solid var(--color-gray-700);
+            transition: all 0.3s;
+        }
+
+        .mission-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(244, 63, 94, 0.1);
+        }
+
+        .mission-card.completed {
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
+        .mission-header {
+            padding: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mission-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .mission-icon {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            background-color: var(--color-gray-700);
+            color: var(--color-white);
+            transition: all 0.3s;
+        }
+
+        .mission-card.completed .mission-icon {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--color-emerald-400);
+        }
+
+        .mission-name {
+            font-size: 1.125rem;
+            font-weight: 700;
+        }
+
+        .mission-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mission-btn {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            background-color: var(--color-gray-700);
+            color: var(--color-gray-400);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mission-btn:hover {
+            color: var(--color-white);
+        }
+
+        .mission-btn.completed {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--color-emerald-400);
+        }
+
+        .chevron-icon {
+            transition: transform 0.3s;
+        }
+
+        .chevron-icon.active {
+            transform: rotate(180deg);
+        }
+
+        .submissions-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .submissions-panel.active {
+            max-height: 500px;
+        }
+
+        .submissions-content {
+            padding: 1.25rem;
+            padding-top: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .submission-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: rgba(55, 65, 81, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submission-item:hover {
+            background-color: var(--color-gray-700);
+        }
+
+        .submission-item.completed {
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--color-emerald-400);
+        }
+
+        /* Summary Card */
+        .summary-card {
+            margin-bottom: 2.5rem;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            background: linear-gradient(to right, rgba(244, 63, 94, 0.1), rgba(244, 63, 94, 0.2));
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            transition: all 0.3s;
+        }
+
+        .summary-card.amber {
+            background: linear-gradient(to right, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.2));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .summary-card.emerald {
+            background: linear-gradient(to right, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .summary-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .summary-content {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .summary-text h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-text p {
+            color: var(--color-gray-300);
+        }
+
+        .summary-points {
+            text-align: center;
+        }
+
+        .points-value {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--color-rose-400);
+        }
+
+        .summary-card.amber .points-value {
+            color: var(--color-amber-400);
+        }
+
+        .summary-card.emerald .points-value {
+            color: var(--color-emerald-400);
+        }
+
+        .points-label {
+            font-size: 0.875rem;
+            color: var(--color-gray-400);
+        }
+
+        /* Save Button */
+        .save-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .save-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(to right, var(--color-rose-500), var(--color-orange-400));
+            color: var(--color-white);
+            font-weight: 700;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(244, 63, 94, 0.1);
+        }
+
+        .save-button:hover {
+            background: linear-gradient(to right, #e11d48, #ea580c);
+            box-shadow: 0 10px 15px -3px rgba(244, 63, 94, 0.3);
+        }
+
+        .save-button i {
+            transition: transform 0.3s;
+        }
+
+        .save-button:hover i {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="brand">
+                <i class="fas fa-award" style="color: var(--color-rose-500); font-size: 1.5rem;"></i>
+                <h1 class="brand-name">HUSTLER</h1>
+            </div>
+            <div class="header-stats">
+                <div class="stat-pill">
+                    <i class="fas fa-clock" style="color: var(--color-rose-400);"></i>
+                    <span id="current-date"></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Stats Panel -->
+        <div class="stats-panel">
+            <div class="stat-card">
+                <label for="weight">Current Weight (lbs)</label>
+                <input type="number" id="weight" placeholder="e.g., 155" step="0.1">
+            </div>
+            
+            <div class="stat-card">
+                <label for="wakeTime">Wake-up Time</label>
+                <input type="time" id="wakeTime">
+            </div>
+            
+            <div class="stat-card">
+                <label for="assessment">Self-Assessment (1-10)</label>
+                <input type="number" id="assessment" placeholder="e.g., 8" min="1" max="10">
+            </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <h2 class="progress-title">Daily Progress</h2>
+                <span class="progress-score"><span id="total-points">0</span>/12 points</span>
+            </div>
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar" style="width: 0%; background-color: var(--color-rose-500);"></div>
+            </div>
+            <div class="progress-labels">
+                <span>Need Improvement</span>
+                <span>Good Progress</span>
+                <span>Excellent</span>
+            </div>
+        </div>
+        
+        <!-- Missions Grid -->
+        <div class="missions-grid" id="missions-grid">
+            <!-- Missions will be inserted here by JavaScript -->
+        </div>
+        
+        <!-- Summary Card -->
+        <div class="summary-card" id="summary-card">
+            <div class="summary-content">
+                <div class="summary-text">
+                    <h2>Today's Performance</h2>
+                    <p id="summary-message">Focus on completing more tasks to reach your goals.</p>
+                </div>
+                <div class="summary-points">
+                    <div class="points-value" id="summary-points">0</div>
+                    <div class="points-label">Total Points</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Save Button -->
+        <div class="save-container">
+            <button id="save-button" class="save-button">
+                <i class="fas fa-save"></i>
+                <span>COMMIT DAILY LOG</span>
+            </button>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date
+            const currentDate = new Date().toLocaleDateString();
+            document.getElementById('current-date').textContent = currentDate;
+            
+            // Initial missions data
+            const missions = [
+                {
+                    id: "fitness",
+                    name: "Fitness",
+                    icon: "fas fa-dumbbell",
+                    iconColor: "emerald",
+                    completed: false,
+                    active: false,
+                    subMissions: [
+                        { id: "cardio", name: "Cardio Session", completed: false },
+                        { id: "gym", name: "Weight Training", completed: false },
+                        { id: "weight", name: "Weight Goal", completed: false },
+                    ],
+                },
+                {
+                    id: "reading",
+                    name: "Reading",
+                    icon: "fas fa-book-open",
+                    iconColor: "blue",
+                    completed: false,
+                    active: false,
+                    subMissions: [
+                        { id: "non-fiction", name: "Non-Fiction Book", completed: false },
+                        { id: "technical", name: "Technical Book", completed: false },
+                        { id: "tutorials", name: "Online Tutorials", completed: false },
+                    ],
+                },
+                {
+                    id: "finance",
+                    name: "Finance",
+                    icon: "fas fa-dollar-sign",
+                    iconColor: "amber",
+                    completed: false,
+                    active: false,
+                    subMissions: [
+                        { id: "budget", name: "Budget Review", completed: false },
+                        { id: "monitor", name: "Finance Monitor", completed: false },
+                        { id: "invest", name: "Investment Research", completed: false },
+                    ],
+                },
+                {
+                    id: "lifestyle",
+                    name: "Lifestyle",
+                    icon: "fas fa-heart",
+                    iconColor: "purple",
+                    completed: false,
+                    active: false,
+                    subMissions: [
+                        { id: "fasting", name: "Intermittent Fasting", completed: false },
+                        { id: "timetracking", name: "Time Tracking", completed: false },
+                        { id: "reflection", name: "Reflection", completed: false },
+                    ],
+                },
+            ];
+            
+            // Render missions
+            renderMissions();
+            
+            // Calculate initial points
+            calculatePoints();
+            
+            // Toggle mission active state
+            function toggleMissionActive(missionId) {
+                missions.forEach(mission => {
+                    if (mission.id === missionId) {
+                        mission.active = !mission.active;
+                    }
+                });
+                renderMissions();
+            }
+            
+            // Toggle mission completion
+            function toggleMissionComplete(missionId) {
+                missions.forEach(mission => {
+                    if (mission.id === missionId) {
+                        mission.completed = !mission.completed;
+                    }
+                });
+                renderMissions();
+                calculatePoints();
+            }
+            
+            // Toggle sub-mission completion
+            function toggleSubMissionComplete(missionId, subMissionId) {
+                missions.forEach(mission => {
+                    if (mission.id === missionId) {
+                        mission.subMissions.forEach(subMission => {
+                            if (subMission.id === subMissionId) {
+                                subMission.completed = !subMission.completed;
+                            }
+                        });
+                    }
+                });
+                renderMissions();
+                calculatePoints();
+            }
+            
+            // Render all missions
+            function renderMissions() {
+                const missionsGrid = document.getElementById('missions-grid');
+                missionsGrid.innerHTML = '';
+                
+                missions.forEach(mission => {
+                    const missionCard = document.createElement('div');
+                    missionCard.className = `mission-card ${mission.completed ? 'completed' : ''}`;
+                    missionCard.innerHTML = `
+                        <div class="mission-header">
+                            <div class="mission-info">
+                                <div class="mission-icon">
+                                    <i class="${mission.icon}"></i>
+                                </div>
+                                <h3 class="mission-name">${mission.name}</h3>
+                            </div>
+                            <div class="mission-actions">
+                                <button class="mission-btn ${mission.completed ? 'completed' : ''}" data-action="complete" data-mission="${mission.id}">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                                <button class="mission-btn" data-action="toggle" data-mission="${mission.id}">
+                                    <i class="fas fa-chevron-down chevron-icon ${mission.active ? 'active' : ''}"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="submissions-panel ${mission.active ? 'active' : ''}">
+                            <div class="submissions-content">
+                                ${mission.subMissions.map(subMission => `
+                                    <div class="submission-item ${subMission.completed ? 'completed' : ''}" data-mission="${mission.id}" data-submission="${subMission.id}">
+                                        <span>${subMission.name}</span>
+                                        ${subMission.completed ? '<i class="fas fa-check-circle"></i>' : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    
+                    missionsGrid.appendChild(missionCard);
+                });
+                
+                // Add event listeners for mission buttons
+                document.querySelectorAll('.mission-btn[data-action="complete"]').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const missionId = button.getAttribute('data-mission');
+                        toggleMissionComplete(missionId);
+                    });
+                });
+                
+                document.querySelectorAll('.mission-btn[data-action="toggle"]').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const missionId = button.getAttribute('data-mission');
+                        toggleMissionActive(missionId);
+                    });
+                });
+                
+                // Add event listeners for submission items
+                document.querySelectorAll('.submission-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const missionId = item.getAttribute('data-mission');
+                        const subMissionId = item.getAttribute('data-submission');
+                        toggleSubMissionComplete(missionId, subMissionId);
+                    });
+                });
+            }
+            
+            // Calculate total points
+            function calculatePoints() {
+                let totalPoints = 0;
+                
+                missions.forEach(mission => {
+                    if (mission.completed) totalPoints += 1;
+                    
+                    mission.subMissions.forEach(subMission => {
+                        if (subMission.completed) totalPoints += 1;
+                    });
+                });
+                
+                // Update points display
+                document.getElementById('total-points').textContent = totalPoints;
+                document.getElementById('summary-points').textContent = totalPoints;
+                
+                // Update progress bar
+                const progressBar = document.getElementById('progress-bar');
+                const progressPercentage = (totalPoints / 12) * 100;
+                progressBar.style.width = `${progressPercentage}%`;
+                
+                // Update progress bar color based on the new threshold (12 total points)
+                if (totalPoints >= 9) {
+                    progressBar.style.backgroundColor = 'var(--color-emerald-500)';
+                } else if (totalPoints >= 5) {
+                    progressBar.style.backgroundColor = 'var(--color-amber-500)';
+                } else {
+                    progressBar.style.backgroundColor = 'var(--color-rose-500)';
+                }
+                
+                // Update summary card based on the new threshold (12 total points)
+                const summaryCard = document.getElementById('summary-card');
+                const summaryMessage = document.getElementById('summary-message');
+                
+                if (totalPoints >= 9) {
+                    summaryCard.className = 'summary-card emerald';
+                    summaryMessage.textContent = 'Crushing it! Keep up the momentum.';
+                } else if (totalPoints >= 5) {
+                    summaryCard.className = 'summary-card amber';
+                    summaryMessage.textContent = 'Good progress. Push a little harder!';
+                } else {
+                    summaryCard.className = 'summary-card';
+                    summaryMessage.textContent = 'Focus on completing more tasks to reach your goals.';
+                }
+            }
+            
+            // Save data as JSON in the requested format
+            document.getElementById('save-button').addEventListener('click', function() {
+                // Format date as YYYY-MM-DD
+                const today = new Date();
+                const formattedDate = today.toISOString().split('T')[0];
+                
+                // Format the data according to the requested structure
+                const formattedMissions = missions.map(mission => {
+                    return {
+                        // Removed id field as requested
+                        name: mission.name,
+                        subMissions: mission.subMissions.map(sub => {
+                            return {
+                                name: sub.name,
+                                completed: sub.completed
+                            };
+                        })
+                    };
+                });
+                
+                const data = {
+                    timestamp: formattedDate,
+                    trackerData: {
+                        weight: document.getElementById('weight').value,
+                        wakeTime: document.getElementById('wakeTime').value,
+                        assessment: document.getElementById('assessment').value
+                    },
+                    missions: formattedMissions,
+                    totalPoints: document.getElementById('total-points').textContent
+                };
+                
+                const jsonData = JSON.stringify(data, null, 2);
+                const blob = new Blob([jsonData], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `hustler-log-${formattedDate}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        });
+    </script>
+<script>window.parent.postMessage({ action: "ready" }, "*"); 
+ 
+window.console = new Proxy(console, {
+  get(target, prop) {
+    if (['log', 'warn', 'error'].includes(prop)) {
+      return new Proxy(target[prop], {
+        apply(fn, thisArg, args) {
+          fn.apply(thisArg, args);
+          window.parent.postMessage({ action: 'console', 
+            type: prop, 
+            args: args.map((arg) => {
+              try {
+                return JSON.stringify(arg).replace(/^["']|["']$/g, '');
+              } catch (e) {
+                return arg;
+              }
+            }) 
+          }, '*');
+        }
+      });
+    }
+    return target[prop];
+  }
+});
+</script></body>
+</html>
