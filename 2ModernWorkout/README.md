@@ -8,7 +8,6 @@
 
 IRON TRACKER is a sleek, modern web application designed to help fitness enthusiasts track their workout progress. With a focus on simplicity and a beautiful UI, this tracker makes logging and monitoring your exercises effortless.
 
-![IRON TRACKER Screenshot](https://via.placeholder.com/800x450?text=IRON+TRACKER+Screenshot)
 
 ## ✨ Features
 
