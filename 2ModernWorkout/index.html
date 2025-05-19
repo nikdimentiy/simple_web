@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRON TRACKER | Modern Workout Log</title>
+    <style>
+        :root {
+            --primary: #4361ee;  /* Royal Blue */
+            --secondary: #3f37c9; /* Darker Blue */
+            --accent: #4cc9f0;   /* Sky Blue */
+            --dark: #1a1a2e;     /* Deep Navy */
+            --light: #f8f9fa;    /* Off-White */
+            --success: #4caf50;  /* Green */
+            --error: #f44336;   /* Red */
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark), #16213e);
+            color: var(--light);
+            min-height: 100vh;
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding: 1.5rem 0;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .exercise-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .exercise-card:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            color: var(--accent);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        input[type="date"] {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0.8rem;
+            width: 100%;
+            max-width: 250px;
+            color: var(--light);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="date"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(76, 201, 240, 0.3);
+        }
+
+        .counter-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .counter {
+            font-size: 3.5rem;
+            font-weight: 700;
+            min-width: 100px;
+            text-align: center;
+            color: var(--light);
+            position: relative;
+        }
+
+        .counter::after {
+            content: 'REPS';
+            display: block;
+            font-size: 0.8rem;
+            color: var(--accent);
+            opacity: 0.8;
+            margin-top: -0.5rem;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+        }
+
+        .btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        .btn-save {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 1.5rem auto;
+            box-shadow: var(--shadow);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4);
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 0.5rem;
+            height: 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status.success {
+            color: var(--success);
+        }
+
+        .status.error {
+            color: var(--error);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background-color: rgba(67, 97, 238, 0.3);
+            color: var(--light);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .file-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .file-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border: 1px solid var(--glass-border);
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .file-btn:hover {
+            background: rgba(67, 97, 238, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .motivational-quote {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .motivational-quote p {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--light);
+            margin-bottom: 0.5rem;
+        }
+
+        .motivational-quote small {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .counter-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .file-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .file-btn {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>IRON TRACKER</h1>
+        <p>Track your gains. Push your limits.</p>
+    </header>
+
+    <div class="motivational-quote">
+        <p>"The only limit is the one you set for yourself."</p>
+        <small>— Unknown</small>
+    </div>
+
+    <div class="exercise-card">
+        <h2>DIPS</h2>
+        <label for="dips-date">Workout Date:</label>
+        <input type="date" id="dips-date">
+        <div class="counter-container">
+            <button class="btn" id="dips-decrease">-</button>
+            <div class="counter" id="dips-count">0</div>
+            <button class="btn" id="dips-increase">+</button>
+        </div>
+        <button class="btn-save" id="save-dips">Save Workout</button>
+        <div class="status" id="dips-status"></div>
+        <div class="history">
+            <h3>Progress Log</h3>
+            <table id="dips-history">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Reps</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="exercise-card">
+        <h2>LEG RAISES</h2>
+        <label for="raises-date">Workout Date:</label>
+        <input type="date" id="raises-date">
+        <div class="counter-container">
+            <button class="btn" id="raises-decrease">-</button>
+            <div class="counter" id="raises-count">0</div>
+            <button class="btn" id="raises-increase">+</button>
+        </div>
+        <button class="btn-save" id="save-raises">Save Workout</button>
+        <div class="status" id="raises-status"></div>
+        <div class="history">
+            <h3>Progress Log</h3>
+            <table id="raises-history">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Reps</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="file-actions">
+        <button class="file-btn" id="export-btn">Export Data</button>
+        <button class="file-btn" id="import-btn">Import Data</button>
+        <input type="file" id="file-input" accept=".json" style="display: none;">
+    </div>
+
+    <div class="motivational-quote">
+        <p>"Success starts with self-discipline."</p>
+        <small>— Arnold Schwarzenegger</small>
+    </div>
+
+    <script>
+        // Data structure
+        let workoutData = {
+            dips: [],
+            raises: []
+        };
+
+        // DOM elements
+        const elements = {
+            dips: {
+                count: document.getElementById('dips-count'),
+                date: document.getElementById('dips-date'),
+                saveBtn: document.getElementById('save-dips'),
+                status: document.getElementById('dips-status'),
+                history: document.querySelector('#dips-history tbody'),
+                incBtn: document.getElementById('dips-increase'),
+                decBtn: document.getElementById('dips-decrease')
+            },
+            raises: {
+                count: document.getElementById('raises-count'),
+                date: document.getElementById('raises-date'),
+                saveBtn: document.getElementById('save-raises'),
+                status: document.getElementById('raises-status'),
+                history: document.querySelector('#raises-history tbody'),
+                incBtn: document.getElementById('raises-increase'),
+                decBtn: document.getElementById('raises-decrease')
+            },
+            exportBtn: document.getElementById('export-btn'),
+            importBtn: document.getElementById('import-btn'),
+            fileInput: document.getElementById('file-input')
+        };
+
+        // Initialize
+        function init() {
+            const today = getCurrentPSTDate();
+            elements.dips.date.value = today;
+            elements.raises.date.value = today;
+            loadData();
+            setupEventListeners();
+        }
+
+        function getCurrentPSTDate() {
+            const now = new Date();
+            const pstTime = now.toLocaleString("en-US", { timeZone: "America/Los_Angeles" });
+            const pstDate = new Date(pstTime);
+            const year = pstDate.getFullYear();
+            const month = String(pstDate.getMonth() + 1).padStart(2, '0');
+            const day = String(pstDate.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function setupEventListeners() {
+            elements.dips.incBtn.addEventListener('click', () => updateCounter('dips', 1));
+            elements.dips.decBtn.addEventListener('click', () => updateCounter('dips', -1));
+            elements.raises.incBtn.addEventListener('click', () => updateCounter('raises', 1));
+            elements.raises.decBtn.addEventListener('click', () => updateCounter('raises', -1));
+            elements.dips.saveBtn.addEventListener('click', () => saveWorkout('dips'));
+            elements.raises.saveBtn.addEventListener('click', () => saveWorkout('raises'));
+            elements.exportBtn.addEventListener('click', exportData);
+            elements.importBtn.addEventListener('click', () => elements.fileInput.click());
+            elements.fileInput.addEventListener('change', importData);
+        }
+
+        function updateCounter(exercise, change) {
+            let current = parseInt(elements[exercise].count.textContent);
+            current += change;
+            if (current < 0) current = 0;
+            elements[exercise].count.textContent = current;
+            elements[exercise].count.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                elements[exercise].count.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function saveWorkout(exercise) {
+            let date = elements[exercise].date.value;
+            if (!date) {
+                date = getCurrentPSTDate();
+                elements[exercise].date.value = date;
+            }
+
+            const count = parseInt(elements[exercise].count.textContent);
+            if (count === 0) {
+                showStatus(exercise, 'Add at least 1 rep!', 'error');
+                return;
+            }
+
+            workoutData[exercise].push({ date, count });
+            elements[exercise].count.textContent = '0';
+            updateHistory(exercise);
+            saveData();
+            showStatus(exercise, 'Workout saved! ✅', 'success');
+        }
+
+        function updateHistory(exercise) {
+            const table = elements[exercise].history;
+            table.innerHTML = '';
+            workoutData[exercise].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            workoutData[exercise].forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDateForDisplay(entry.date)}</td>
+                    <td>${entry.count}</td>
+                `;
+                table.appendChild(row);
+            });
+        }
+
+        function formatDateForDisplay(dateString) {
+            const [year, month, day] = dateString.split('-');
+            const date = new Date(year, month - 1, day);
+            return date.toLocaleDateString('en-US', {
+                timeZone: 'America/Los_Angeles',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function showStatus(exercise, message, type) {
+            const status = elements[exercise].status;
+            status.textContent = message;
+            status.className = `status ${type}`;
+            setTimeout(() => {
+                status.textContent = '';
+                status.className = 'status';
+            }, 3000);
+        }
+
+        function saveData() {
+            localStorage.setItem('workoutData', JSON.stringify(workoutData));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('workoutData');
+            if (saved) {
+                try {
+                    workoutData = JSON.parse(saved);
+                    updateHistory('dips');
+                    updateHistory('raises');
+                } catch (e) {
+                    console.error('Error loading data:', e);
+                }
+            }
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(workoutData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `workout-data-${getCurrentPSTDate()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showStatus('dips', 'Data exported! 📁', 'success');
+            showStatus('raises', 'Data exported! 📁', 'success');
+        }
+
+        function importData(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    if (data.dips && data.raises) {
+                        workoutData = data;
+                        updateHistory('dips');
+                        updateHistory('raises');
+                        saveData();
+                        showStatus('dips', 'Data imported! ✅', 'success');
+                        showStatus('raises', 'Data imported! ✅', 'success');
+                    } else {
+                        throw new Error('Invalid data format');
+                    }
+                } catch (error) {
+                    showStatus('dips', 'Import failed! ❌', 'error');
+                    showStatus('raises', 'Import failed! ❌', 'error');
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        }
+
+        init();
+    </script>
+</body>
+</html>
