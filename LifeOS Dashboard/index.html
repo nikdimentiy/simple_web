@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeOS Dashboard - Your Integrated Life Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --primary-color: #3B82F6;
+            --secondary-color: #8B5CF6;
+            --accent-color: #EC4899;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --info-color: #0EA5E9;
+            --productivity-color: #92400E;
+            --sunrise-primary: #F97316;
+            --sunrise-secondary: #F59E0B;
+            --text-main: #F9FAFB;
+            --text-secondary: #94a3b8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+        }
+        
+        .font-display {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.3);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 10px;
+            border: 2px solid var(--dark-bg);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: var(--primary-color);
+        }
+
+        /* Custom input styles */
+        .form-input {
+            background-color: #334155;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+        
+        /* Mission colors */
+        .mission-fitness { --mission-color: var(--success-color); }
+        .mission-finance { --mission-color: var(--danger-color); }
+        .mission-learning { --mission-color: var(--info-color); }
+        .mission-reading { --mission-color: var(--warning-color); }
+        .mission-productivity { --mission-color: var(--productivity-color); }
+        .mission-lifestyle { --mission-color: var(--secondary-color); }
+        
+        /* Animation for confetti */
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary-color);
+            opacity: 0;
+            z-index: 9999;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        /* Glow effect for cards */
+        .glow-card {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+        .glow-card:hover {
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Gradient border */
+        .gradient-border {
+            position: relative;
+            border-radius: 1rem;
+        }
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 1rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            z-index: -1;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+        .gradient-border:hover::before {
+            opacity: 0.8;
+        }
+
+        /* Date watermark - More visible with just the date */
+        .day-card {
+            position: relative;
+            overflow: hidden;
+        }
+        .day-card::after {
+            content: attr(data-date-display);
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.1); /* More visible with 10% opacity */
+            z-index: 0;
+            font-family: 'Orbitron', sans-serif;
+            pointer-events: none;
+            line-height: 1;
+        }
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="min-h-screen p-4 sm:p-6 lg:p-8">
+        <div class="max-w-7xl mx-auto">
+            
+            <!-- Header -->
+            <header class="text-center mb-8">
+                <h1 class="font-display text-4xl sm:text-5xl font-bold tracking-wider uppercase">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">LifeOS</span> Dashboard
+                </h1>
+                <p class="text-text-secondary mt-2 text-lg">Your Integrated Life Management System</p>
+            </header>
+
+            <!-- Tabs Navigation -->
+            <nav class="flex justify-center mb-8 bg-gray-800 p-2 rounded-xl shadow-lg">
+                <button class="tab-button flex-1 sm:flex-initial text-center py-3 px-6 rounded-lg font-semibold" data-tab="productivity">
+                    <i class="fas fa-rocket mr-2"></i> Productivity Hub
+                </button>
+                <button class="tab-button flex-1 sm:flex-initial text-center py-3 px-6 rounded-lg font-semibold" data-tab="sunrise">
+                    <i class="fas fa-sun mr-2"></i> Sunrise Routine
+                </button>
+                <button class="tab-button flex-1 sm:flex-initial text-center py-3 px-6 rounded-lg font-semibold" data-tab="reading">
+                    <i class="fas fa-book-open mr-2"></i> Reading Monitor
+                </button>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main>
+                <!-- Productivity Hub Tab -->
+                <div id="productivity" class="tab-content">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Left Panel: Progress -->
+                        <aside class="lg:col-span-1 bg-card-bg p-6 rounded-2xl shadow-2xl border border-border-color glow-card">
+                            <h2 class="font-display text-2xl font-bold mb-4 text-center">Weekly Progress</h2>
+                            <div class="text-center mb-6">
+                                <div id="hustler-week-number" class="text-lg font-semibold text-accent-color"></div>
+                                <div id="hustler-week-display" class="text-text-secondary"></div>
+                            </div>
+                            <div class="relative w-48 h-48 sm:w-56 sm:h-56 mx-auto mb-6">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                                    <circle class="text-gray-700" stroke-width="8" stroke="currentColor" fill="transparent" r="52" cx="60" cy="60" />
+                                    <circle id="hustler-progress-ring" class="text-primary-color" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="52" cx="60" cy="60" style="transition: stroke-dashoffset 0.5s;" />
+                                </svg>
+                                <div id="hustler-progress-text" class="absolute inset-0 flex flex-col items-center justify-center text-3xl font-bold font-display">0%</div>
+                            </div>
+                             <div id="hustler-current-date" class="text-center text-text-secondary border-t border-border-color pt-4 mt-4"></div>
+                            <button id="hustler-save-btn" class="w-full mt-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                                <i class="fas fa-save"></i> Save Progress
+                            </button>
+                        </aside>
+
+                        <!-- Right Panel: Command Center -->
+                        <section id="hustler-command-center" class="lg:col-span-2 space-y-4">
+                            <!-- Day cards will be injected here by JS -->
+                        </section>
+                    </div>
+                </div>
+
+                <!-- Sunrise Routine Tab -->
+                <div id="sunrise" class="tab-content">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                         <!-- Left Panel: Tasks -->
+                        <div class="lg:col-span-2 bg-card-bg p-6 rounded-2xl shadow-2xl border border-border-color glow-card">
+                            <h2 class="font-display text-2xl font-bold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-sunrise-primary to-sunrise-secondary">Morning Foundations</h2>
+                            <div id="sunrise-task-list" class="space-y-4">
+                                <!-- Tasks will be injected here -->
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Stats & Motivation -->
+                        <aside class="lg:col-span-1 space-y-8">
+                            <div class="bg-card-bg p-6 rounded-2xl shadow-2xl border border-border-color glow-card">
+                                <h3 class="font-display text-xl font-bold mb-4 text-center">Today's Progress</h3>
+                                <div class="w-full bg-gray-700 rounded-full h-4 mb-2">
+                                    <div id="sunrise-progress-bar" class="bg-gradient-to-r from-sunrise-primary to-sunrise-secondary h-4 rounded-full" style="width: 0%; transition: width 0.5s;"></div>
+                                </div>
+                                <div id="sunrise-progress-text" class="text-center font-semibold text-lg text-gray-300">0% Completed</div>
+                                <div id="sunrise-completed-count" class="text-center text-text-secondary text-sm">0/6 tasks</div>
+                            </div>
+                             <div class="grid grid-cols-2 gap-4">
+                                <button id="sunrise-save-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"><i class="fas fa-save"></i> Save</button>
+                                <button id="sunrise-load-btn" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"><i class="fas fa-upload"></i> Load</button>
+                            </div>
+                            <button id="sunrise-reset-btn" class="w-full bg-accent-color text-white font-bold py-3 px-4 rounded-lg hover:bg-pink-600 transition-colors flex items-center justify-center gap-2"><i class="fas fa-sync-alt"></i> Reset</button>
+                        </aside>
+                    </div>
+                </div>
+
+                <!-- Reading Monitor Tab -->
+                <div id="reading" class="tab-content">
+                    <div class="max-w-3xl mx-auto bg-card-bg p-8 rounded-2xl shadow-2xl border border-border-color glow-card">
+                        <div class="text-center mb-8">
+                            <i class="fas fa-book-reader text-5xl text-primary-color mb-4"></i>
+                            <h2 class="font-display text-3xl font-bold">Reading Monitor</h2>
+                            <p class="text-text-secondary mt-1">Track your deep learning journey.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
+                            <div class="bg-gray-800 p-4 rounded-lg gradient-border">
+                                <p class="text-sm text-text-secondary">Total Hours Read</p>
+                                <p id="reading-total-hours" class="text-4xl font-bold text-primary-color">0.00</p>
+                            </div>
+                            <div class="bg-gray-800 p-4 rounded-lg gradient-border">
+                                <p class="text-sm text-text-secondary">Sessions Logged</p>
+                                <p id="reading-session-count" class="text-4xl font-bold text-primary-color">0</p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                            <input type="number" id="reading-hours-input" min="0" step="0.1" class="form-input w-full" placeholder="Enter hours read today (e.g., 1.5)">
+                            <button id="reading-add-btn" class="bg-primary-color text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors flex-shrink-0 flex items-center justify-center gap-2">
+                                <i class="fas fa-plus-circle"></i> Add Log
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                             <button id="reading-save-btn" class="bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"><i class="fas fa-save"></i> Save Data</button>
+                             <button id="reading-load-btn" class="bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"><i class="fas fa-upload"></i> Load Data</button>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-bold mb-4">Reading History</h3>
+                            <div id="reading-history-list" class="max-h-60 overflow-y-auto space-y-2 pr-2">
+                                <p id="reading-no-history" class="text-text-secondary">No sessions logged yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+        </div>
+    </div>
+    
+    <input type="file" id="file-input" class="hidden" accept=".json">
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- Tab Management ---
+    const tabs = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    const switchTab = (tabName) => {
+        tabs.forEach(tab => {
+            const isActive = tab.dataset.tab === tabName;
+            tab.classList.toggle('active', isActive);
+        });
+        tabContents.forEach(content => {
+            const isActive = content.id === tabName;
+            content.classList.toggle('active', isActive);
+        });
+    };
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+    });
+
+    // Set initial active tab
+    switchTab('productivity');
+
+
+    // --- Generic Helper Functions ---
+    const fileInput = document.getElementById('file-input');
+    const saveDataToFile = (data, filename) => {
+        const jsonData = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
+    const loadDataFromFile = (callback) => {
+        fileInput.onchange = (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        callback(data);
+                    } catch (error) {
+                        console.error("Error parsing JSON:", error);
+                        alert("Failed to load or parse the file. It may be invalid.");
+                    }
+                };
+                reader.readAsText(file);
+                fileInput.value = ''; // Reset for next use
+            }
+        };
+        fileInput.click();
+    };
+    
+
+    // --- Productivity Hub (MV Hustler) Logic ---
+    const productivityHub = (() => {
+        const commandCenter = document.getElementById('hustler-command-center');
+        const progressText = document.getElementById('hustler-progress-text');
+        const progressRing = document.getElementById('hustler-progress-ring');
+        const weekDisplay = document.getElementById('hustler-week-display');
+        const weekNumberDisplay = document.getElementById('hustler-week-number');
+        const currentDateDisplay = document.getElementById('hustler-current-date');
+        const saveBtn = document.getElementById('hustler-save-btn');
+        const ringRadius = progressRing.r.baseVal.value;
+        const ringCircumference = 2 * Math.PI * ringRadius;
+
+        let weeklyData = {};
+
+        const missions = [
+            { id: "fitness", name: "Fitness", icon: "fas fa-dumbbell", colorClass: "mission-fitness" },
+            { id: "finance", name: "Finance", icon: "fas fa-chart-line", colorClass: "mission-finance" },
+            { id: "learning", name: "Learning", icon: "fas fa-brain", colorClass: "mission-learning" },
+            { id: "reading", name: "Reading", icon: "fas fa-book-open", colorClass: "mission-reading" },
+            { id: "productivity", name: "Productivity", icon: "fas fa-rocket", colorClass: "mission-productivity" },
+            { id: "lifestyle", name: "Lifestyle", icon: "fas fa-heart-pulse", colorClass: "mission-lifestyle" }
+        ];
+
+        const getWeekDays = (date) => {
+            const dayOfWeek = date.getDay();
+            const startOfWeek = new Date(date);
+            startOfWeek.setDate(date.getDate() - dayOfWeek);
+            return Array.from({ length: 7 }, (_, i) => {
+                const day = new Date(startOfWeek);
+                day.setDate(startOfWeek.getDate() + i);
+                return day;
+            });
+        };
+
+        const getDayOfYear = (date) => {
+            const start = new Date(date.getFullYear(), 0, 0);
+            const diff = date - start;
+            return Math.floor(diff / (1000 * 60 * 60 * 24));
+        };
+
+        const getSundayBasedWeekNumber = (date) => {
+            const dayOfYear = getDayOfYear(date);
+            const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+            const firstDayOfWeek = firstDayOfYear.getDay();
+            return Math.ceil((dayOfYear + firstDayOfWeek) / 7);
+        };
+
+        const displayCurrentWeekInfo = () => {
+            const today = new Date();
+            const weekDays = getWeekDays(today);
+            const startOfWeek = weekDays[0];
+            const endOfWeek = weekDays[6];
+            const options = { month: 'long', day: 'numeric' };
+            weekDisplay.textContent = `${startOfWeek.toLocaleDateString('en-US', options)} - ${endOfWeek.toLocaleDateString('en-US', { ...options, year: 'numeric' })}`;
+            weekNumberDisplay.textContent = `WEEK ${getSundayBasedWeekNumber(today)}`;
+            currentDateDisplay.textContent = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        };
+        
+        const initializeData = () => {
+            const today = new Date();
+            const weekDays = getWeekDays(today);
+            weeklyData = {};
+            weekDays.forEach(day => {
+                const isoDate = day.toISOString().split('T')[0];
+                weeklyData[isoDate] = {
+                    stats: { weight: '', wakeTime: '', focusTime: '' },
+                    missions: missions.map(m => ({ id: m.id, completed: false })),
+                    active: false,
+                };
+            });
+            weeklyData[today.toISOString().split('T')[0]].active = true; // Open today's card
+        };
+
+        const render = () => {
+            commandCenter.innerHTML = '';
+            const today = new Date();
+            const todayISO = today.toISOString().split('T')[0];
+            
+            progressRing.style.strokeDasharray = `${ringCircumference} ${ringCircumference}`;
+
+            getWeekDays(today).forEach(day => {
+                const isoDate = day.toISOString().split('T')[0];
+                const dayData = weeklyData[isoDate];
+                const dateDisplay = day.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const card = document.createElement('div');
+                card.className = `day-card bg-card-bg rounded-2xl border border-border-color overflow-hidden shadow-lg transition-all duration-500 ${isoDate === todayISO ? 'border-primary-color' : ''} glow-card`;
+                card.dataset.date = isoDate;
+                card.dataset.dateDisplay = dateDisplay;
+                
+                card.innerHTML = `
+                    <div class="day-header p-4 cursor-pointer flex justify-between items-center bg-gray-800 hover:bg-gray-700 transition-colors">
+                        <div>
+                            <h3 class="font-bold text-xl">${day.toLocaleDateString('en-US', { weekday: 'long' })}</h3>
+                            <span class="text-sm text-text-secondary">${dateDisplay}</span>
+                        </div>
+                        <i class="fas fa-chevron-down transition-transform duration-300 ${dayData.active ? 'rotate-180' : ''}"></i>
+                    </div>
+                    <div class="day-content overflow-hidden transition-all duration-500" style="max-height: ${dayData.active ? '1000px' : '0px'};">
+                        <div class="p-4 space-y-6 relative z-10">
+                            <div class="stats-grid grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                ${['weight', 'wakeTime', 'focusTime'].map(stat => `
+                                <div class="stat-input">
+                                    <label class="block text-sm font-medium text-text-secondary mb-1 capitalize">${stat.replace('Time', ' Time')}</label>
+                                    <input type="${stat === 'wakeTime' ? 'time' : 'number'}" data-stat="${stat}" value="${dayData.stats[stat]}" class="form-input w-full">
+                                </div>`).join('')}
+                            </div>
+                            <div class="missions-list space-y-2">
+                                ${missions.map(mission => {
+                                    const missionStatus = dayData.missions.find(m => m.id === mission.id);
+                                    const missionClass = mission.colorClass;
+                                    return `
+                                    <div class="mission-item flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-colors ${missionStatus.completed ? 'bg-opacity-20' : 'bg-opacity-10 hover:bg-opacity-20'} ${missionClass}" 
+                                         style="background-color: ${missionStatus.completed ? `var(--mission-color)` : 'transparent'}; 
+                                                border: 1px solid ${missionStatus.completed ? `var(--mission-color)` : `var(--mission-color)`};"
+                                         data-mission-id="${mission.id}">
+                                        <i class="icon ${mission.icon} w-6 text-center" style="color: var(--mission-color);"></i>
+                                        <span class="name flex-grow ${missionStatus.completed ? 'line-through text-gray-500' : ''}" style="color: var(--mission-color);">${mission.name}</span>
+                                        <div class="checkbox w-6 h-6 rounded-md border-2 flex items-center justify-center" 
+                                             style="${missionStatus.completed ? `background-color: var(--mission-color); border-color: var(--mission-color);` : `border-color: var(--mission-color);`}">
+                                            ${missionStatus.completed ? '<i class="fas fa-check text-white text-sm"></i>' : ''}
+                                        </div>
+                                    </div>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                commandCenter.appendChild(card);
+            });
+
+            addEventListeners();
+            updateProgress();
+        };
+
+        const addEventListeners = () => {
+            commandCenter.querySelectorAll('.day-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const card = header.closest('.day-card');
+                    const date = card.dataset.date;
+                    weeklyData[date].active = !weeklyData[date].active;
+                    const content = card.querySelector('.day-content');
+                    content.style.maxHeight = weeklyData[date].active ? `${content.scrollHeight}px` : '0px';
+                    header.querySelector('i').classList.toggle('rotate-180', weeklyData[date].active);
+                });
+            });
+
+            commandCenter.querySelectorAll('.mission-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const date = item.closest('.day-card').dataset.date;
+                    const missionId = item.dataset.missionId;
+                    const mission = weeklyData[date].missions.find(m => m.id === missionId);
+                    mission.completed = !mission.completed;
+                    render(); // Re-render to update styles
+                });
+            });
+
+            commandCenter.querySelectorAll('.stat-input input').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const date = input.closest('.day-card').dataset.date;
+                    weeklyData[date].stats[e.target.dataset.stat] = e.target.value;
+                });
+            });
+            
+            saveBtn.addEventListener('click', () => {
+                const today = new Date();
+                const dataToSave = {
+                    dataType: 'productivityHubData',
+                    weekNumber: getSundayBasedWeekNumber(today),
+                    data: weeklyData
+                };
+                saveDataToFile(dataToSave, `productivity-hub-week-${dataToSave.weekNumber}-${today.toISOString().split('T')[0]}.json`);
+                saveBtn.innerHTML = `<i class="fas fa-check"></i> Saved!`;
+                setTimeout(() => { saveBtn.innerHTML = `<i class="fas fa-save"></i> Save Progress`; }, 2000);
+            });
+        };
+
+        const updateProgress = () => {
+            let completedCount = 0;
+            let totalCount = 0;
+            Object.values(weeklyData).forEach(day => {
+                day.missions.forEach(mission => {
+                    totalCount++;
+                    if (mission.completed) completedCount++;
+                });
+            });
+            
+            const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+            progressText.textContent = `${percentage}%`;
+            progressRing.style.strokeDashoffset = ringCircumference - (percentage / 100) * ringCircumference;
+        };
+
+        const init = () => {
+            initializeData();
+            displayCurrentWeekInfo();
+            render();
+        };
+
+        return { init };
+    })();
+
+
+    // --- Sunrise Routine Logic ---
+    const sunriseRoutine = (() => {
+        const taskList = document.getElementById('sunrise-task-list');
+        const progressBar = document.getElementById('sunrise-progress-bar');
+        const progressText = document.getElementById('sunrise-progress-text');
+        const completedCountEl = document.getElementById('sunrise-completed-count');
+        const saveBtn = document.getElementById('sunrise-save-btn');
+        const loadBtn = document.getElementById('sunrise-load-btn');
+        const resetBtn = document.getElementById('sunrise-reset-btn');
+
+        let taskData = {
+            'early-wake': { name: 'Wake up without snoozing', desc: 'Start with intention', completed: false },
+            'hydration': { name: 'Drink a glass of water', desc: 'Rehydrate after sleep', completed: false },
+            'exercise': { name: 'Morning movement', desc: '10+ minutes of activity', completed: false },
+            'main-goal': { name: 'Set daily priority', desc: 'Identify your main goal', completed: false },
+            'learning': { name: 'Learning session', desc: '15-30 mins of reading/learning', completed: false },
+            'no-distractions': { name: 'Digital detox', desc: 'No phone for first hour', completed: false },
+        };
+        const totalTasks = Object.keys(taskData).length;
+
+        const render = () => {
+            taskList.innerHTML = '';
+            Object.entries(taskData).forEach(([id, task]) => {
+                const taskEl = document.createElement('div');
+                taskEl.className = `task-card flex items-center p-4 rounded-lg cursor-pointer transition-all duration-300 border-2 ${task.completed ? 'bg-green-500/20 border-success-color' : 'bg-gray-700/50 border-transparent hover:border-sunrise-primary'}`;
+                taskEl.dataset.taskId = id;
+                taskEl.innerHTML = `
+                    <div class="checkbox w-7 h-7 rounded-full flex items-center justify-center mr-4 border-2 ${task.completed ? 'bg-success-color border-success-color' : 'border-sunrise-secondary'}">
+                        ${task.completed ? '<i class="fas fa-check text-white"></i>' : ''}
+                    </div>
+                    <div>
+                        <p class="font-semibold ${task.completed ? 'line-through text-gray-500' : ''}">${task.name}</p>
+                        <p class="text-sm text-text-secondary">${task.desc}</p>
+                    </div>
+                `;
+                taskEl.addEventListener('click', () => toggleTask(id));
+                taskList.appendChild(taskEl);
+            });
+            updateProgress();
+        };
+        
+        const celebrateCompletion = () => {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        };
+
+        const updateProgress = () => {
+            const completedTasks = Object.values(taskData).filter(t => t.completed).length;
+            const percentage = Math.round((completedTasks / totalTasks) * 100);
+            progressBar.style.width = `${percentage}%`;
+            progressText.textContent = `${percentage}% Completed`;
+            completedCountEl.textContent = `${completedTasks}/${totalTasks} tasks`;
+            
+            if (completedTasks === totalTasks) {
+                celebrateCompletion();
+            }
+        };
+
+        const toggleTask = (id) => {
+            taskData[id].completed = !taskData[id].completed;
+            render();
+        };
+        
+        const resetProgress = () => {
+            if (confirm("Are you sure you want to reset your routine progress?")) {
+                Object.values(taskData).forEach(task => task.completed = false);
+                render();
+            }
+        };
+
+        const init = () => {
+            render();
+            saveBtn.addEventListener('click', () => {
+                 saveDataToFile({ dataType: 'sunriseRoutineData', tasks: taskData }, 'sunrise-routine.json');
+                 alert('Progress saved!');
+            });
+            loadBtn.addEventListener('click', () => {
+                loadDataFromFile(data => {
+                    if (data.dataType === 'sunriseRoutineData' && data.tasks) {
+                        taskData = data.tasks;
+                        render();
+                        alert('Progress loaded!');
+                    } else {
+                        alert('Invalid file format for Sunrise Routine.');
+                    }
+                });
+            });
+            resetBtn.addEventListener('click', resetProgress);
+        };
+        
+        return { init };
+    })();
+
+
+    // --- Reading Monitor Logic ---
+    const readingMonitor = (() => {
+        let readingData = { totalHours: 0, sessions: [] };
+        
+        const totalHoursEl = document.getElementById('reading-total-hours');
+        const sessionCountEl = document.getElementById('reading-session-count');
+        const hoursInput = document.getElementById('reading-hours-input');
+        const addBtn = document.getElementById('reading-add-btn');
+        const historyList = document.getElementById('reading-history-list');
+        const noHistoryMsg = document.getElementById('reading-no-history');
+        const saveBtn = document.getElementById('reading-save-btn');
+        const loadBtn = document.getElementById('reading-load-btn');
+
+        const updateUI = () => {
+            totalHoursEl.textContent = readingData.totalHours.toFixed(2);
+            sessionCountEl.textContent = readingData.sessions.length;
+            
+            historyList.innerHTML = '';
+            if (readingData.sessions.length === 0) {
+                historyList.appendChild(noHistoryMsg);
+                noHistoryMsg.style.display = 'block';
+            } else {
+                noHistoryMsg.style.display = 'none';
+                readingData.sessions.forEach(session => {
+                    const entryDiv = document.createElement('div');
+                    entryDiv.className = 'flex justify-between items-center bg-gray-800 p-3 rounded-lg glow-card';
+                    entryDiv.innerHTML = `
+                        <p class="text-sm text-text-secondary">${session.date}</p>
+                        <p class="font-semibold text-primary-color">${session.hours.toFixed(1)} hours</p>
+                    `;
+                    historyList.appendChild(entryDiv);
+                });
+            }
+        };
+
+        const addHours = () => {
+            const hours = parseFloat(hoursInput.value);
+            if (hours > 0) {
+                readingData.totalHours += hours;
+                const date = new Date().toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+                readingData.sessions.unshift({ hours, date });
+                updateUI();
+                hoursInput.value = '';
+            } else {
+                alert('Please enter a valid, positive number of hours.');
+            }
+        };
+        
+        const init = () => {
+            updateUI();
+            addBtn.addEventListener('click', addHours);
+            saveBtn.addEventListener('click', () => {
+                saveDataToFile({ dataType: 'readingMonitorData', ...readingData }, 'reading-data.json');
+                alert('Reading data saved!');
+            });
+            loadBtn.addEventListener('click', () => {
+                loadDataFromFile(data => {
+                    if (data.dataType === 'readingMonitorData' && data.totalHours !== undefined) {
+                        readingData = data;
+                        updateUI();
+                        alert('Reading data loaded!');
+                    } else {
+                        alert('Invalid file format for Reading Monitor.');
+                    }
+                });
+            });
+        };
+
+        return { init };
+    })();
+
+
+    // --- Initialize All Modules ---
+    productivityHub.init();
+    sunriseRoutine.init();
+    readingMonitor.init();
+
+});
+</script>
+</body>
+</html>
