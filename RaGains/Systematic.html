@@ -1,0 +1,1362 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a1428" />
+    <title>STRIKE PROTOCOL | CAPTAIN AMERICA TERMINAL</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Oswald:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        /* Captain America color palette - deep patriotic tones */
+        --bg: #0a1428;        /* deep navy blue */
+        --bg-panel: rgba(10, 20, 40, 0.85);
+        --bg-lift: rgba(15, 28, 48, 0.9);
+        --border: #2c3e6b;
+        --border-hi: #e03a3e;   /* hero red */
+
+        /* Patriotic neon accents */
+        --star-blue: #1e3a8a;
+        --hero-red: #e03a3e;
+        --hero-red-dim: rgba(224, 58, 62, 0.2);
+        --shield-silver: #c0cbd6;
+        --vibranium: #4b6a9b;
+        --white-star: #f0f4fa;
+        
+        /* Legacy mapping for existing classes */
+        --amber: #e0a32b;       /* gold/amber for highlights */
+        --amber-dim: rgba(224, 163, 43, 0.2);
+        --green: #00e676;       /* bright gym green */
+        --green-dim: rgba(0, 230, 118, 0.2);
+        --violet: #4b6a9b;      /* shield steel blue */
+        --violet-dim: rgba(75, 106, 155, 0.2);
+        --red: #e03a3e;
+        --red-dim: rgba(224, 58, 62, 0.2);
+        --orange: #ff6d00;      /* bright booth orange */
+        --orange-dim: rgba(255, 109, 0, 0.2);
+        --learn-blue: #00b0ff;  /* bright learn blue */
+        --learn-blue-dim: rgba(0, 176, 255, 0.2);
+
+        --text: #eef2ff;
+        --text-dim: #9bb5d9;
+
+        --font-mono: "Share Tech Mono", monospace;
+        --font-display: "Oswald", "Bebas Neue", sans-serif;
+        --font-body: "Barlow Condensed", "Oswald", sans-serif;
+
+        /* Neon Glows - Star Spangled */
+        --glow-amber: 0 0 10px rgba(224, 163, 43, 0.5), 0 0 20px rgba(224, 163, 43, 0.2);
+        --glow-green: 0 0 10px rgba(0, 230, 118, 0.6), 0 0 20px rgba(0, 230, 118, 0.3);
+        --glow-violet: 0 0 10px rgba(75, 106, 155, 0.6), 0 0 20px rgba(75, 106, 155, 0.3);
+        --glow-red: 0 0 12px rgba(224, 58, 62, 0.7), 0 0 24px rgba(224, 58, 62, 0.3);
+        --glow-orange: 0 0 10px rgba(255, 109, 0, 0.6), 0 0 20px rgba(255, 109, 0, 0.3);
+        --glow-learn: 0 0 10px rgba(0, 176, 255, 0.6), 0 0 20px rgba(0, 176, 255, 0.3);
+      }
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.5;
+        background: radial-gradient(ellipse at 20% 30%, #0c1830 0%, #050d1a 100%);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        padding: 64px 20px 48px;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* Shield pattern overlay */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: radial-gradient(circle at 10% 20%, rgba(224, 58, 62, 0.03) 2px, transparent 2px);
+        background-size: 32px 32px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* Star-spangled glow */
+      body::after {
+        content: "★";
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        font-size: 80px;
+        color: rgba(224, 58, 62, 0.08);
+        pointer-events: none;
+        font-family: Arial, sans-serif;
+        z-index: 0;
+      }
+
+      /* HUD TOGGLE - red white blue */
+      .hud-toggle {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        background: var(--bg-lift);
+        border: 2px solid var(--hero-red);
+        color: var(--white-star);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        outline: none;
+        box-shadow: 0 0 15px rgba(224, 58, 62, 0.3);
+      }
+      .hud-toggle:hover {
+        background: var(--hero-red);
+        color: #fff;
+        border-color: var(--white-star);
+        box-shadow: var(--glow-red);
+        transform: scale(1.05);
+      }
+
+      /* LAYOUT */
+      .dashboard {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 20px;
+        max-width: 1440px;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+        align-content: start;
+      }
+
+      .top-row {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 20px;
+        transition: max-height 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s, transform 0.4s;
+        max-height: 600px;
+        opacity: 1;
+        transform-origin: top;
+      }
+      .top-row.folded {
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(-20px) scale(0.98);
+        margin-bottom: -20px;
+        pointer-events: none;
+      }
+
+      .panel-clock { grid-column: span 4; }
+      .panel-week { grid-column: span 3; }
+      .panel-transform { grid-column: span 2; }
+      .panel-metrics { grid-column: span 3; }
+      .panel-objectives { grid-column: 1 / -1; }
+      .panel-calendar { grid-column: 1 / -1; }
+
+      @media (max-width: 1100px) {
+        .panel-clock, .panel-week { grid-column: span 6; }
+        .panel-transform { grid-column: span 4; }
+        .panel-metrics { grid-column: span 8; }
+      }
+      @media (max-width: 768px) {
+        .dashboard { grid-template-columns: 1fr; }
+        .top-row { grid-template-columns: 1fr; }
+        .top-row.folded { margin-bottom: -20px; }
+        .panel-clock, .panel-week, .panel-transform, .panel-metrics { grid-column: 1/-1; }
+      }
+
+      /* PANELS - Vibranium alloy look */
+      .panel {
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(224, 58, 62, 0.02);
+        transition: border-color 0.3s, box-shadow 0.3s;
+      }
+      .panel:hover {
+        border-color: var(--hero-red);
+        box-shadow: 0 0 25px rgba(224, 58, 62, 0.1);
+      }
+      .panel::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--hero-red), var(--white-star), var(--star-blue));
+        box-shadow: 0 0 8px rgba(224, 58, 62, 0.6);
+        border-radius: 16px 16px 0 0;
+        opacity: 0.9;
+      }
+
+      .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(224, 58, 62, 0.2);
+      }
+      .panel-title {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        color: var(--white-star);
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-shadow: none;
+      }
+      .panel-title i {
+        font-size: 1.3rem;
+        color: var(--hero-red);
+        text-shadow: 0 0 5px var(--hero-red);
+      }
+      .panel-tag {
+        font-size: 0.72rem;
+        font-family: var(--font-body);
+        color: var(--white-star);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border: 1px solid var(--hero-red);
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: rgba(224, 58, 62, 0.12);
+        text-shadow: none;
+      }
+
+      /* CLOCK */
+      .time-readout {
+        font-family: var(--font-display);
+        font-size: 4.5rem;
+        color: var(--white-star);
+        line-height: 1;
+        letter-spacing: 3px;
+        text-shadow: 0 0 8px rgba(224, 58, 62, 0.35);
+        margin-top: 8px;
+      }
+      .date-readout {
+        font-size: 0.9rem;
+        color: var(--text-dim);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-top: 6px;
+      }
+      .location-tag {
+        margin-top: auto;
+        font-size: 0.8rem;
+        color: var(--shield-silver);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 20px;
+        background: rgba(224, 58, 62, 0.06);
+        border-radius: 8px;
+        padding: 10px 12px;
+        border: 1px solid var(--hero-red-dim);
+      }
+      .loc-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--hero-red);
+        border-radius: 50%;
+        box-shadow: var(--glow-red);
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(1.2); }
+      }
+
+      /* WEEK / SORTIE LOG */
+      .week-count {
+        font-family: var(--font-display);
+        font-size: 5rem;
+        color: var(--white-star);
+        line-height: 1;
+        letter-spacing: 2px;
+      }
+      .week-count span { font-size: 1.8rem; color: var(--shield-silver); }
+      .week-sub { font-size: 0.78rem; color: var(--text-dim); letter-spacing: 0.5px; }
+      .status-dots { display: flex; gap: 8px; margin-top: 24px; }
+      .dot {
+        height: 12px;
+        flex: 1;
+        background: var(--bg-lift);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        transition: all 0.3s ease;
+      }
+      .dot.active-gym { background: var(--green); border-color: var(--green); box-shadow: 0 0 8px var(--green); }
+      .dot.active-booth { background: #b300ff; border-color: #b300ff; box-shadow: 0 0 8px #b300ff; }
+      .dot.active-learn { background: var(--learn-blue); border-color: var(--learn-blue); box-shadow: 0 0 10px rgba(0, 176, 255, 0.7); }
+      .day-labels { display: flex; gap: 8px; margin-top: 8px; }
+      .day-labels span { flex: 1; text-align: center; font-size: 0.72rem; font-family: var(--font-body); color: var(--text-dim); letter-spacing: 0.3px; }
+
+      /* PROTOCOL COUNTER */
+      .streak-number {
+        font-family: var(--font-display);
+        font-size: 4.5rem;
+        color: var(--hero-red);
+        text-shadow: var(--glow-red);
+        line-height: 1;
+      }
+      .streak-label { font-size: 0.78rem; color: var(--text-dim); letter-spacing: 0.5px; text-transform: uppercase; margin-top: 8px; }
+      .transform-meta {
+        margin-top: auto;
+        background: rgba(224, 58, 62, 0.1);
+        border-radius: 6px;
+        padding: 10px 12px;
+        border: 1px solid var(--hero-red-dim);
+        font-size: 0.65rem;
+        display: flex;
+        justify-content: space-between;
+      }
+      .transform-meta span:last-child { color: var(--hero-red); text-shadow: 0 0 4px var(--hero-red); }
+
+      /* METRICS GRID */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        height: 100%;
+        align-content: center;
+      }
+      .metric-cell {
+        background: var(--bg-lift);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px 14px;
+        transition: all 0.3s;
+      }
+      .metric-cell:hover { border-color: var(--hero-red); }
+      .metric-val { font-family: var(--font-display); font-size: 1.9rem; line-height: 1; letter-spacing: 1px; }
+      .metric-label { font-size: 0.72rem; font-family: var(--font-body); color: var(--text-dim); letter-spacing: 0.3px; text-transform: uppercase; margin-top: 6px; }
+      .metric-bar { height: 4px; background: rgba(0,0,0,0.5); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+      .metric-bar-fill { height: 100%; border-radius: 2px; transition: width 0.8s ease; }
+      .c-amber { color: #e0a32b; text-shadow: var(--glow-amber); }
+      .c-green { color: var(--green); text-shadow: 0 0 6px var(--green); }
+      .c-orange { color: var(--orange); text-shadow: 0 0 6px var(--orange); }
+      .c-learn-grad { color: var(--learn-blue); text-shadow: 0 0 8px var(--learn-blue); }
+      .bg-learn-grad { background: var(--learn-blue); box-shadow: 0 0 8px rgba(0, 176, 255, 0.6); }
+      .bg-amber { background: #e0a32b; box-shadow: var(--glow-amber); }
+      .bg-green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+      .bg-orange { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+
+      /* CADENCE RING - shield design */
+      .cadence-wrap {
+        grid-column: span 2;
+        background: var(--bg-lift);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .cadence-ring { width: 56px; height: 56px; flex-shrink: 0; }
+      .cadence-ring .track { stroke: var(--border); }
+      .cadence-ring .fill { stroke: var(--hero-red); stroke-linecap: round; transform: rotate(-90deg); transition: stroke-dashoffset 1s ease; filter: drop-shadow(0 0 6px var(--hero-red)); }
+      .cadence-info { flex: 1; }
+      .cadence-val { font-family: var(--font-display); font-size: 1.6rem; color: var(--hero-red); letter-spacing: 1px; }
+      .cadence-label { font-size: 0.72rem; font-family: var(--font-body); color: var(--text-dim); letter-spacing: 0.3px; text-transform: uppercase; margin-top: 4px; }
+
+      /* MISSION TRACKER - clean readable cards */
+      .obj-container { display: flex; flex-direction: column; gap: 14px; flex: 1; }
+      .mission-card {
+        background: var(--bg-lift);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 22px 28px;
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+      }
+      .mission-card:hover { border-color: var(--hero-red); box-shadow: 0 0 20px rgba(224,58,62,0.08); }
+      .mc-identity { flex-shrink: 0; min-width: 160px; }
+      .mc-name {
+        font-family: var(--font-display);
+        font-size: 1.4rem;
+        color: var(--white-star);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .mc-type {
+        font-size: 0.75rem;
+        font-family: var(--font-body);
+        color: var(--text-dim);
+        letter-spacing: 0.3px;
+        margin-top: 5px;
+        text-transform: uppercase;
+      }
+      .mc-status-chip {
+        display: inline-block;
+        margin-top: 8px;
+        font-size: 0.72rem;
+        font-family: var(--font-body);
+        letter-spacing: 0.3px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        border: 1px solid;
+        text-transform: uppercase;
+      }
+      .mc-status-chip.on-track { border-color: var(--green); color: var(--green); background: rgba(0,230,118,0.07); }
+      .mc-status-chip.urgent { border-color: var(--hero-red); color: var(--hero-red); background: rgba(224,58,62,0.07); }
+      .mc-progress { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+      .mc-date-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        font-family: var(--font-body);
+        color: var(--text-dim);
+      }
+      .mc-date-end { color: var(--white-star); }
+      .mc-bar { height: 10px; background: rgba(0,0,0,0.4); border-radius: 5px; overflow: hidden; }
+      .mc-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--hero-red), #e0a32b);
+        border-radius: 5px;
+        transition: width 0.8s ease;
+      }
+      .mc-bar-fill.garden { background: linear-gradient(90deg, #00c853, #69f0ae); box-shadow: 0 0 6px rgba(0,230,118,0.4); }
+      .mc-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .mc-pct {
+        font-size: 0.78rem;
+        color: var(--text-dim);
+        font-family: var(--font-body);
+      }
+      .mc-pct strong { color: var(--white-star); }
+      .mc-hours-chip {
+        font-size: 0.75rem;
+        font-family: var(--font-body);
+        color: var(--text-dim);
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 3px 12px;
+        letter-spacing: 0.3px;
+      }
+      .mc-stats { flex-shrink: 0; text-align: right; min-width: 110px; }
+      .mc-days-num {
+        font-family: var(--font-display);
+        font-size: 3rem;
+        line-height: 1;
+        color: var(--white-star);
+      }
+      .mc-days-num.urgent { color: var(--hero-red); text-shadow: 0 0 12px rgba(224,58,62,0.5); }
+      .mc-days-label {
+        font-size: 0.72rem;
+        color: var(--text-dim);
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        font-family: var(--font-body);
+        margin-top: 2px;
+      }
+      .mc-sub-stats { display: flex; justify-content: flex-end; gap: 16px; margin-top: 10px; }
+      .mc-sub-stat { text-align: center; }
+      .mc-sub-val { font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 0.5px; }
+      .mc-sub-label { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 0.3px; text-transform: uppercase; font-family: var(--font-body); }
+
+      /* EXPORT BUTTON */
+      .export-btn {
+        background: transparent; border: 1px solid var(--hero-red); color: var(--hero-red);
+        border-radius: 20px; cursor: pointer; padding: 6px 14px; display: flex; align-items: center; gap: 6px;
+        font-size: 0.78rem; font-family: var(--font-body); letter-spacing: 0.3px; text-transform: uppercase;
+        transition: all 0.3s;
+      }
+      .export-btn:hover { background: var(--hero-red); color: #fff; transform: translateY(-2px); }
+
+      /* CALENDAR PANEL - distinct warm-dark background */
+      .panel-calendar {
+        background: rgba(8, 10, 18, 0.97);
+        border-color: #2a3560;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.7), inset 0 0 60px rgba(0,0,0,0.4);
+      }
+      .panel-calendar:hover { border-color: var(--hero-red); }
+      .panel-calendar .cal-grid { background: rgba(4, 6, 14, 0.6); border-radius: 12px; padding: 10px; }
+
+      /* CALENDAR - wide readable grid */
+      .cal-nav { display: flex; gap: 8px; }
+      .cal-btn {
+        background: transparent; border: 1px solid var(--hero-red); color: var(--hero-red);
+        border-radius: 20px; padding: 6px 12px; cursor: pointer; font-family: var(--font-body); font-size: 0.78rem;
+        letter-spacing: 0.3px; text-transform: uppercase; transition: all 0.3s;
+      }
+      .cal-btn:hover { background: var(--hero-red); color: #fff; }
+      .cal-month-label { font-family: var(--font-display); font-size: 1.5rem; color: var(--white-star); letter-spacing: 1px; margin-bottom: 18px; }
+      .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+      .day-head {
+        text-align: center; font-size: 0.78rem; font-family: var(--font-body);
+        color: var(--text-dim); letter-spacing: 0.3px; padding: 10px 0;
+        border-bottom: 1px solid rgba(224,58,62,0.2);
+      }
+      .day-cell {
+        min-height: 56px;
+        background: rgba(12,16,30,0.7); border: 1px solid rgba(44,62,107,0.5); border-radius: 8px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        cursor: pointer; font-family: var(--font-body); color: rgba(155,181,217,0.65);
+        transition: all 0.2s; position: relative; gap: 3px;
+        padding: 6px 4px;
+      }
+      .day-cell .cal-num { font-size: 1rem; line-height: 1; font-weight: 500; }
+      .day-cell .cal-tag { font-size: 0.55rem; letter-spacing: 0.04em; text-transform: uppercase; font-weight: 700; opacity: 0.9; }
+      .day-cell:hover:not(.empty) { border-color: var(--hero-red); color: var(--white-star); box-shadow: 0 0 12px rgba(224,58,62,0.3); z-index: 5; }
+      .day-cell.empty { background: transparent; border-color: transparent; cursor: default; }
+      .day-cell.gym {
+        background: rgba(0,230,118,0.15); border-color: var(--green); border-width: 2px;
+        color: #fff; box-shadow: inset 0 0 10px rgba(0,230,118,0.15), 0 0 6px rgba(0,230,118,0.2);
+      }
+      .day-cell.gym .cal-tag { color: var(--green); }
+      .day-cell.learn {
+        background: rgba(0,176,255,0.15); border-color: var(--learn-blue); border-width: 2px;
+        color: #fff; box-shadow: inset 0 0 10px rgba(0,176,255,0.15), 0 0 6px rgba(0,176,255,0.2);
+      }
+      .day-cell.learn .cal-tag { color: var(--learn-blue); }
+      .day-cell.booth {
+        background: rgba(179,0,255,0.15); border-color: #b300ff; border-width: 2px;
+        color: #fff; box-shadow: inset 0 0 10px rgba(179,0,255,0.15), 0 0 6px rgba(179,0,255,0.25);
+      }
+      .day-cell.booth .cal-tag { color: #b300ff; }
+      .day-cell.today { border: 2px solid var(--hero-red) !important; color: var(--white-star) !important; box-shadow: 0 0 14px rgba(224,58,62,0.45) !important; }
+      .day-cell.today .cal-num::after { content: " ●"; font-size: 5px; color: var(--hero-red); vertical-align: middle; }
+      .day-cell.deadline { border: 2px solid var(--hero-red) !important; background: rgba(224,58,62,0.18) !important; color: #fff !important; box-shadow: 0 0 12px rgba(224,58,62,0.6) !important; }
+
+      .cal-legend {
+        margin-top: 18px; display: flex; gap: 28px; align-items: center;
+        font-size: 0.78rem; color: var(--text-dim); letter-spacing: 0.3px;
+        border-top: 1px solid rgba(224,58,62,0.15); padding-top: 16px;
+        font-family: var(--font-body);
+      }
+      .cal-legend-item { display: flex; align-items: center; gap: 8px; }
+      .cal-legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+      .cal-legend-dot.gym { background: var(--green); box-shadow: 0 0 6px var(--green); }
+      .cal-legend-dot.learn { background: var(--learn-blue); box-shadow: 0 0 6px var(--learn-blue); }
+      .cal-legend-dot.booth { background: #b300ff; box-shadow: 0 0 6px #b300ff; }
+      .cal-legend-dot.deadline { background: var(--hero-red); box-shadow: 0 0 6px var(--hero-red); }
+      .cal-legend-tip { margin-left: auto; font-size: 0.72rem; color: var(--text-dim); font-style: italic; }
+
+      /* STATUS BAR */
+      .status-bar {
+        grid-column: 1 / -1; display: flex; align-items: center; gap: 24px; padding: 12px 24px;
+        background: rgba(10, 20, 40, 0.9); border: 1px solid rgba(224,58,62,0.4); border-radius: 40px;
+        font-size: 0.78rem; font-family: var(--font-body); color: var(--text-dim); letter-spacing: 0.5px; text-transform: uppercase;
+        backdrop-filter: blur(10px); box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+      }
+      .status-bar::before { content: "⚡"; color: var(--hero-red); text-shadow: var(--glow-red); margin-right: 8px; }
+      .status-item { display: flex; align-items: center; gap: 8px; }
+      .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+      .status-ok { background: var(--green); box-shadow: 0 0 6px var(--green); }
+      .status-warn { background: var(--hero-red); box-shadow: var(--glow-red); animation: pulse 1.2s infinite; }
+      .status-bar-right { margin-left: auto; color: var(--white-star); text-shadow: 0 0 4px var(--hero-red); }
+
+      @keyframes flashIn { 0% { opacity: 0; transform: scale(0.96); } 100% { opacity: 1; transform: scale(1); } }
+      .flash { animation: flashIn 0.25s ease; }
+
+      /* BOTTOM-LEFT STACK — mission deadlines + day countdown */
+      .bottom-left-stack {
+        position: fixed; bottom: 78px; left: 24px; z-index: 9998;
+        display: flex; flex-direction: column; gap: 16px; align-items: stretch;
+        width: 190px;
+      }
+
+      /* MISSION DEADLINE MINI WIDGETS */
+      .mission-dl-mini {
+        background: rgba(0,14,28,0.96); border-radius: 10px;
+        padding: 8px 12px 7px; backdrop-filter: blur(16px);
+        display: flex; align-items: center; gap: 10px; border: 1px solid;
+      }
+      .mdl-name {
+        font-family: var(--font-body); font-size: 0.78rem;
+        letter-spacing: 0.5px; text-transform: uppercase;
+        flex-shrink: 0; min-width: 44px;
+      }
+      .mdl-days-wrap { flex-shrink: 0; line-height: 1; }
+      .mdl-days {
+        font-family: var(--font-display); font-size: 1.35rem;
+        line-height: 1; letter-spacing: 0.04em;
+      }
+      .mdl-unit {
+        font-size: 0.55rem; color: var(--text-dim);
+        letter-spacing: 0.1em; margin-left: 1px;
+      }
+      .mdl-right { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+      .mdl-deadline {
+        font-family: var(--font-body); font-size: 0.65rem;
+        letter-spacing: 0.3px; text-transform: uppercase; color: var(--text-dim);
+      }
+      .mdl-bar { height: 2px; border-radius: 2px; overflow: hidden; background: rgba(255,255,255,0.06); }
+      .mdl-bar-fill { height: 100%; border-radius: 2px; transition: width 1s linear; }
+
+      /* ZENITH COUNTDOWN WIDGET */
+      @keyframes cdPulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+      @keyframes cdGlow  { 0%,100%{box-shadow:0 0 18px rgba(0,176,255,0.3),0 4px 24px rgba(0,0,0,0.6)} 50%{box-shadow:0 0 32px rgba(0,176,255,0.6),0 4px 24px rgba(0,0,0,0.6)} }
+      .zenith-countdown {
+        background: rgba(0,14,28,0.96); border: 1px solid var(--learn-blue);
+        border-radius: 16px; padding: 14px 18px 12px;
+        backdrop-filter: blur(16px);
+        animation: cdGlow 3s ease-in-out infinite;
+      }
+      .zcd-header {
+        font-family: var(--font-body); font-size: 0.78rem;
+        letter-spacing: 0.5px; color: var(--learn-blue);
+        text-transform: uppercase; margin-bottom: 10px;
+      }
+      .zcd-slots { display: flex; align-items: flex-end; gap: 6px; justify-content: center; }
+      .zcd-unit { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+      .zcd-num {
+        font-family: var(--font-display); font-size: 1.75rem; line-height: 1;
+        color: var(--white-star); letter-spacing: 0.05em;
+        text-shadow: 0 0 12px rgba(0,176,255,0.9), 0 0 24px rgba(0,176,255,0.4);
+      }
+      .zcd-label {
+        font-family: var(--font-body); font-size: 0.65rem;
+        letter-spacing: 0.3px; color: var(--text-dim); text-transform: uppercase;
+      }
+      .zcd-sep {
+        font-family: var(--font-display); font-size: 1.5rem; color: var(--learn-blue);
+        opacity: 0.7; margin-bottom: 4px; animation: cdPulse 1s step-start infinite;
+      }
+      .zcd-bar {
+        margin-top: 10px; height: 2px; border-radius: 2px;
+        background: rgba(0,176,255,0.12); overflow: hidden;
+      }
+      .zcd-bar-fill {
+        height: 100%; background: linear-gradient(90deg, var(--learn-blue), #7de8ff);
+        border-radius: 2px; transition: width 1s linear;
+        box-shadow: 0 0 6px var(--learn-blue);
+      }
+      .zcd-sublabel {
+        margin-top: 6px; text-align: center; font-size: 0.44rem;
+        letter-spacing: 0.2em; color: rgba(0,176,255,0.45); text-transform: uppercase;
+      }
+
+      /* ZENITH link restyle */
+      @keyframes nfab-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+      .zenith-fab {
+        position: fixed; bottom: 24px; left: 24px; z-index: 9999;
+        display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+        background: rgba(10, 20, 40, 0.92); border: 1px solid var(--hero-red); border-radius: 40px;
+        color: var(--white-star); text-decoration: none; font-family: var(--font-body);
+        font-size: 0.85rem; font-weight: 600; letter-spacing: 1px; backdrop-filter: blur(12px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: all 0.25s;
+      }
+      .zenith-fab:hover { background: var(--hero-red); border-color: var(--white-star); color: #fff; transform: translateY(-2px); }
+      .zenith-fab .zfab-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--hero-red); box-shadow: 0 0 8px var(--hero-red); animation: nfab-pulse 2s infinite; }
+
+      /* REMOVED: Week at a Glance widget CSS */
+      .swp-row-summary {
+        flex-shrink: 0;
+        min-width: 170px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 3px;
+        padding-left: 20px;
+        border-left: 1px solid var(--border);
+      }
+      .swp-count-line {
+        font-family: var(--font-display);
+        font-size: 1.05rem;
+        letter-spacing: 1px;
+        color: var(--white-star);
+      }
+      .swp-count-line em { font-style: normal; font-size: 1.5rem; }
+      .swp-count-sub {
+        font-size: 0.62rem;
+        font-family: var(--font-mono);
+        color: var(--text-dim);
+        letter-spacing: 0.5px;
+      }
+      .swp-delta {
+        font-size: 0.68rem;
+        font-family: var(--font-mono);
+        margin-top: 4px;
+        letter-spacing: 0.3px;
+      }
+      .swp-delta.up   { color: #34d399; }
+      .swp-delta.down { color: #f43f5e; }
+      .swp-delta.flat { color: var(--text-dim); }
+
+      /* PANEL HIDDEN */
+      .panel-hidden { display: none !important; }
+
+      /* HUD PANEL SELECTOR MENU */
+      @keyframes hudSlideIn { from { opacity:0; transform:translateY(-8px) scale(0.97); } to { opacity:1; transform:none; } }
+      .hud-menu {
+        position: fixed; top: 68px; right: 16px; z-index: 9998;
+        background: rgba(8,14,28,0.97); border: 1px solid var(--hero-red);
+        border-radius: 14px; padding: 10px;
+        min-width: 210px; backdrop-filter: blur(18px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 24px rgba(224,58,62,0.12);
+        display: none; flex-direction: column; gap: 2px;
+        animation: hudSlideIn 0.2s ease;
+      }
+      .hud-menu.open { display: flex; }
+      .hud-menu-title {
+        font-family: var(--font-body); font-size: 0.82rem; letter-spacing: 1px;
+        color: var(--hero-red); text-transform: uppercase;
+        padding: 4px 8px 10px; border-bottom: 1px solid rgba(224,58,62,0.2); margin-bottom: 4px;
+      }
+      .hud-row {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 8px 10px; border-radius: 8px; cursor: pointer; gap: 12px;
+        transition: background 0.2s; user-select: none;
+      }
+      .hud-row:hover { background: rgba(255,255,255,0.05); }
+      .hud-row-name {
+        font-family: var(--font-body); font-size: 0.78rem; letter-spacing: 0.3px;
+        color: var(--text-dim); text-transform: uppercase; flex: 1; transition: color 0.2s;
+      }
+      .hud-row.vis .hud-row-name { color: var(--white-star); }
+      .hud-pill {
+        width: 30px; height: 16px; border-radius: 8px; flex-shrink: 0;
+        border: 1px solid var(--border); background: rgba(255,255,255,0.06);
+        position: relative; transition: all 0.25s;
+      }
+      .hud-pill::after {
+        content: ''; position: absolute; width: 10px; height: 10px;
+        border-radius: 50%; background: var(--text-dim);
+        top: 2px; left: 2px; transition: all 0.25s;
+      }
+      .hud-row.vis .hud-pill { background: rgba(224,58,62,0.25); border-color: var(--hero-red); box-shadow: 0 0 8px rgba(224,58,62,0.3); }
+      .hud-row.vis .hud-pill::after { background: var(--hero-red); left: 16px; box-shadow: 0 0 5px var(--hero-red); }
+      .hud-menu-footer {
+        display: flex; gap: 6px; margin-top: 6px; padding-top: 8px;
+        border-top: 1px solid rgba(224,58,62,0.15);
+      }
+      .hud-btn {
+        flex: 1; font-family: var(--font-body); font-size: 0.72rem; letter-spacing: 0.3px;
+        text-transform: uppercase; padding: 7px 4px; border-radius: 7px; cursor: pointer;
+        border: 1px solid var(--border); background: transparent; color: var(--text-dim);
+        transition: all 0.2s;
+      }
+      .hud-btn:hover { border-color: var(--hero-red); color: var(--hero-red); box-shadow: 0 0 8px rgba(224,58,62,0.2); }
+
+      /* HEATMAP + TODAY'S LOG LAYOUT */
+      .panel-heatmap     { grid-column: span 6; }
+      .panel-zenith-today { grid-column: span 6; }
+      @media (max-width: 900px) {
+        .panel-heatmap, .panel-zenith-today { grid-column: 1 / -1; }
+      }
+
+      /* TODAY'S ZENITH LOG WIDGET */
+      .ztd-score-bar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+        padding: 14px 16px;
+        background: var(--bg-lift);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+      .ztd-score-num {
+        font-family: var(--font-display);
+        font-size: 2.8rem;
+        line-height: 1;
+        letter-spacing: 1px;
+        min-width: 2.5ch;
+        text-align: center;
+      }
+      .ztd-score-of {
+        font-size: 0.72rem;
+        font-family: var(--font-body);
+        color: var(--text-dim);
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        margin-top: 4px;
+      }
+      .ztd-progress-wrap { flex: 1; }
+      .ztd-progress-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        font-family: var(--font-body);
+        color: var(--text-dim);
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        margin-bottom: 7px;
+      }
+      .ztd-track {
+        height: 6px;
+        background: rgba(0,0,0,0.4);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .ztd-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.6s ease;
+      }
+      .ztd-missions { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+      .ztd-mission {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: var(--bg-lift);
+        border: 1px solid var(--border);
+        transition: border-color 0.3s, background 0.3s;
+      }
+      .ztd-mission.done {
+        border-color: var(--ztd-color, var(--green));
+        background: rgba(var(--ztd-rgb, 0,230,118), 0.06);
+      }
+      .ztd-mission-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        flex-shrink: 0;
+        color: var(--text-dim);
+        transition: all 0.3s;
+      }
+      .ztd-mission-icon i { font-size: 1rem; }
+      .ztd-mission.done .ztd-mission-icon {
+        background: rgba(var(--ztd-rgb, 0,230,118), 0.15);
+        border-color: var(--ztd-color, var(--green));
+        color: var(--ztd-color, var(--green));
+        box-shadow: 0 0 8px rgba(var(--ztd-rgb, 0,230,118), 0.25);
+      }
+      .ztd-mission-name {
+        flex: 1;
+        font-size: 0.85rem;
+        font-family: var(--font-body);
+        color: var(--text-dim);
+        letter-spacing: 0.2px;
+        transition: color 0.3s;
+      }
+      .ztd-mission.done .ztd-mission-name { color: var(--white-star); }
+      .ztd-mission-status {
+        font-size: 0.72rem;
+        font-family: var(--font-body);
+        color: var(--text-dim);
+        letter-spacing: 0.3px;
+        min-width: 52px;
+        text-align: right;
+        transition: color 0.3s;
+      }
+      .ztd-mission.done .ztd-mission-status {
+        color: var(--ztd-color, var(--green));
+        font-weight: 600;
+      }
+      .ztd-empty-state {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: var(--text-dim);
+        font-family: var(--font-body);
+        font-size: 0.8rem;
+        opacity: 0.5;
+        padding: 24px 0;
+      }
+      .ztd-empty-state i { font-size: 2rem; }
+
+      /* DAY-OF-WEEK HEATMAP */
+      .hm-header { margin-bottom: 18px; }
+      .hm-title  { font-family: var(--font-display); font-size: 1.25rem; letter-spacing: 1px; color: var(--white-star); text-transform: uppercase; }
+      .hm-subtitle { font-size: 0.72rem; font-family: var(--font-body); color: var(--text-dim); letter-spacing: 0.3px; text-transform: uppercase; margin-top: 4px; }
+      .heatmap-bars { display: flex; gap: 8px; align-items: flex-end; height: 110px; }
+      .hm-bar-wrap  { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; height: 100%; }
+      .hm-bar-track { flex: 1; width: 100%; background: rgba(255,255,255,0.05); border-radius: 5px 5px 0 0; overflow: hidden; display: flex; align-items: flex-end; }
+      .hm-bar-fill  { width: 100%; border-radius: 5px 5px 0 0; transition: height 0.9s cubic-bezier(0.34,1.56,0.64,1); min-height: 3px; }
+      .hm-bar-count { font-size: 0.78rem; font-family: var(--font-display); letter-spacing: 0.5px; line-height: 1; min-height: 14px; }
+      .hm-bar-label { font-size: 0.68rem; color: var(--text-dim); letter-spacing: 0.3px; font-family: var(--font-body); text-transform: uppercase; }
+      .hm-bar-wrap.hm-peak .hm-bar-label { color: var(--white-star); }
+      .hm-footer { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(224,58,62,0.15); font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-body); letter-spacing: 0.3px; display: flex; justify-content: space-between; }
+    </style>
+  </head>
+  <body>
+    <div class="bottom-left-stack">
+      <div id="missionDeadlines"></div>
+      <div class="zenith-countdown" title="Time remaining today">
+        <div class="zcd-header">Day Countdown</div>
+        <div class="zcd-slots">
+          <div class="zcd-unit">
+            <div class="zcd-num" id="zcdH">--</div>
+            <div class="zcd-label">HRS</div>
+          </div>
+          <div class="zcd-sep">:</div>
+          <div class="zcd-unit">
+            <div class="zcd-num" id="zcdM">--</div>
+            <div class="zcd-label">MIN</div>
+          </div>
+          <div class="zcd-sep">:</div>
+          <div class="zcd-unit">
+            <div class="zcd-num" id="zcdS">--</div>
+            <div class="zcd-label">SEC</div>
+          </div>
+        </div>
+        <div class="zcd-bar"><div class="zcd-bar-fill" id="zcdFill" style="width:0%"></div></div>
+        <div class="zcd-sublabel">Until Midnight</div>
+      </div>
+    </div>
+    <a href="Renegator.html" class="zenith-fab" title="RENEGATOR Flow Tracker">
+      <div class="zfab-dot"></div>
+      <span class="zfab-icon">★</span>
+      <span>RENEGATOR</span>
+    </a>
+    <button class="hud-toggle" onclick="toggleHudMenu(event)" title="Panel Visibility">
+      <i class="material-icons-round" id="hudToggleIcon">tune</i>
+    </button>
+
+    <div class="hud-menu" id="hudMenu">
+      <div class="hud-menu-title">Panel Visibility</div>
+      <div class="hud-row vis" id="hrow-panelClock"    onclick="hudTogglePanel('panelClock')">   <span class="hud-row-name">Strike Time</span>    <div class="hud-pill"></div></div>
+      <div class="hud-row vis" id="hrow-panelWeek"     onclick="hudTogglePanel('panelWeek')">    <span class="hud-row-name">Sortie Log</span>     <div class="hud-pill"></div></div>
+      <div class="hud-row vis" id="hrow-panelTransform"onclick="hudTogglePanel('panelTransform')"><span class="hud-row-name">Protocol</span>        <div class="hud-pill"></div></div>
+      <div class="hud-row vis" id="hrow-panelMetrics"  onclick="hudTogglePanel('panelMetrics')"> <span class="hud-row-name">Intel</span>           <div class="hud-pill"></div></div>
+      <div class="hud-row vis" id="hrow-heatmapPanel"      onclick="hudTogglePanel('heatmapPanel')">      <span class="hud-row-name">Day Activity</span>    <div class="hud-pill"></div></div>
+      <div class="hud-row vis" id="hrow-zenithTodayPanel" onclick="hudTogglePanel('zenithTodayPanel')"> <span class="hud-row-name">Today's Log</span>     <div class="hud-pill"></div></div>
+      <div class="hud-menu-footer">
+        <button class="hud-btn" onclick="hudSetAll(true)">Show All</button>
+        <button class="hud-btn" onclick="hudSetAll(false)">Hide All</button>
+      </div>
+    </div>
+
+    <div class="dashboard">
+      <div class="status-bar">
+        <div class="status-item"><div class="status-dot status-ok"></div><span>STRIKE ACTIVE</span></div>
+        <div class="status-item"><div class="status-dot status-ok"></div><span id="sbProtocol">PROTOCOL: DAY 0</span></div>
+        <div class="status-item"><span id="sbDayDate">— // —</span></div>
+        <div class="status-bar-right" id="sbTime">--:-- --</div>
+      </div>
+
+      <div class="top-row" id="topRow">
+        <div class="panel panel-clock" id="panelClock"><div class="panel-header"><span class="panel-title"><i class="material-icons-round">schedule</i>STRIKE TIME</span><span class="panel-tag">LIVE</span></div><div class="time-readout" id="clockTime">00:00</div><div class="date-readout" id="clockDate">LOADING...</div><div class="location-tag"><div class="loc-dot"></div>LOC: SUNNYVALE CA // PST // ACTIVE DUTY</div></div>
+        <div class="panel panel-week" id="panelWeek"><div class="panel-header"><span class="panel-title"><i class="material-icons-round">assessment</i>SORTIE LOG</span><span class="panel-tag" style="border-color:var(--green);color:var(--green);">WEEK</span></div><div class="week-count" id="weekCount">0<span>/7</span></div><div class="week-sub">ACTIVE DAYS THIS WEEK</div><div class="status-dots" id="weekDots"></div><div class="day-labels" id="dayLabels"></div></div>
+        <div class="panel panel-transform" id="panelTransform"><div class="panel-header"><span class="panel-title"><i class="material-icons-round">bolt</i>PROTOCOL</span></div><div class="streak-number" id="transformCount">0</div><div class="streak-label">DAY COUNT</div><div class="transform-meta"><span>INITIATED</span><span>MAY 01, 2026</span></div></div>
+        <div class="panel panel-metrics" id="panelMetrics"><div class="panel-header"><span class="panel-title"><i class="material-icons-round">bar_chart</i>INTEL</span><span class="panel-tag" style="border-color:var(--hero-red);color:var(--hero-red);">ALL-TIME</span></div><div class="metrics-grid"><div class="metric-cell"><div class="metric-val c-green" id="metTotalDays">0</div><div class="metric-label">TOTAL LOGGED</div><div class="metric-bar"><div class="metric-bar-fill bg-green" id="barTotalDays" style="width:0%"></div></div></div><div class="metric-cell"><div class="metric-val c-learn-grad" id="metLearnDays">0</div><div class="metric-label">LEARN DAYS</div><div class="metric-bar"><div class="metric-bar-fill bg-learn-grad" id="barLearnDays" style="width:0%"></div></div></div><div class="metric-cell"><div class="metric-val c-green" id="metGymDays">0</div><div class="metric-label">GYM DAYS</div><div class="metric-bar"><div class="metric-bar-fill bg-green" id="barGymDays" style="width:0%"></div></div></div><div class="metric-cell"><div class="metric-val c-orange" id="metMixDays">0</div><div class="metric-label">BOOTH DAYS</div><div class="metric-bar"><div class="metric-bar-fill bg-orange" id="barMixDays" style="width:0%"></div></div></div><div class="metric-cell"><div class="metric-val c-amber" id="metCurStreak">0</div><div class="metric-label">CUR STREAK</div><div class="metric-bar"><div class="metric-bar-fill bg-amber" id="barCurStreak" style="width:0%"></div></div></div><div class="metric-cell"><div class="metric-val c-learn-grad" id="metBestStreak">0</div><div class="metric-label">BEST STREAK</div><div class="metric-bar"><div class="metric-bar-fill bg-learn-grad" id="barBestStreak" style="width:100%"></div></div></div><div class="cadence-wrap"><svg class="cadence-ring" viewBox="0 0 52 52"><circle class="track" cx="26" cy="26" r="23" /><circle class="fill" id="cadenceFill" cx="26" cy="26" r="23" stroke-dasharray="144.5" stroke-dashoffset="144.5" /></svg><div class="cadence-info"><div class="cadence-val"><span id="cadencePct">0</span>%</div><div class="cadence-label">ACTIVE CADENCE<br />SINCE PROTOCOL START</div></div></div></div></div>
+      </div>
+
+      <div class="panel panel-heatmap" id="heatmapPanel">
+        <div class="hm-header">
+          <div class="hm-title"><i class="material-icons-round" style="font-size:1.2rem;color:var(--hero-red);vertical-align:middle;margin-right:8px">bar_chart</i>Day Activity</div>
+          <div class="hm-subtitle">Activity frequency by day of week · all-time</div>
+        </div>
+        <div class="heatmap-bars" id="heatmapBars"></div>
+        <div class="hm-footer">
+          <span id="hmPeakDay">—</span>
+          <span id="hmTotalLogged">0 days logged</span>
+        </div>
+      </div>
+
+      <div class="panel panel-zenith-today" id="zenithTodayPanel">
+        <div class="panel-header">
+          <span class="panel-title"><i class="material-icons-round">today</i>Today's Log</span>
+          <span class="panel-tag" id="ztdDateTag">—</span>
+        </div>
+        <div id="ztdContent" style="display:flex;flex-direction:column;flex:1;"></div>
+      </div>
+
+      <div class="panel panel-objectives">
+        <div class="panel-header">
+          <span class="panel-title"><i class="material-icons-round">flag</i>Mission Tracker</span>
+          <button class="export-btn" onclick="exportMissionData()"><i class="material-icons-round">download</i> Export CSV</button>
+        </div>
+        <div class="obj-container" id="targetsContainer"></div>
+      </div>
+      <div class="panel panel-calendar">
+        <div class="panel-header">
+          <span class="panel-title"><i class="material-icons-round">calendar_month</i>Activity Calendar</span>
+          <div class="cal-nav">
+            <button class="cal-btn" onclick="navMonth(-1)">◀ Prev</button>
+            <button class="cal-btn" onclick="navMonth(1)">Next ▶</button>
+          </div>
+        </div>
+        <div class="cal-month-label" id="calMonthLabel">LOADING</div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="cal-legend">
+          <div class="cal-legend-item"><div class="cal-legend-dot gym"></div>Gym</div>
+          <div class="cal-legend-item"><div class="cal-legend-dot learn"></div>Learn</div>
+          <div class="cal-legend-item"><div class="cal-legend-dot booth"></div>Booth</div>
+          <div class="cal-legend-item"><div class="cal-legend-dot deadline"></div>Deadline</div>
+          <span class="cal-legend-tip">Click any day to cycle its activity</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const TRANSFORM_START = new Date("2026-05-01T00:00:00");
+      const DB_KEY = "avenger_log_v5";
+
+      /* ── LIVE SYNC · BroadcastChannel ── */
+      const _nexusSync = (() => {
+        try {
+          const ch = new BroadcastChannel('nexus-sync');
+          return {
+            broadcast: src => ch.postMessage({ type: 'storage-update', source: src }),
+            listen:    cb  => { ch.onmessage = e => { if (e.data?.type === 'storage-update') cb(); }; }
+          };
+        } catch { return { broadcast: () => {}, listen: () => {} }; }
+      })();
+      const TARGETS = [{ name: "Network+", start: new Date("2026-05-01T00:00:00"), end: new Date("2026-05-28T00:00:00") }, { name: "Security+", start: new Date("2026-05-01T00:00:00"), end: new Date("2026-06-25T00:00:00") }, { name: "Garden", start: new Date("2026-05-01T00:00:00"), end: new Date("2026-10-25T00:00:00"), garden: true }];
+
+      const HUD_PANELS = [
+        { id: "panelClock",     label: "Strike Time"     },
+        { id: "panelWeek",      label: "Sortie Log"      },
+        { id: "panelTransform", label: "Protocol"        },
+        { id: "panelMetrics",   label: "Intel"           },
+        { id: "heatmapPanel",     label: "Day Activity"  },
+        { id: "zenithTodayPanel", label: "Today's Log"   },
+      ];
+      const HUD_VIS_KEY = "hud_vis_v1";
+
+      function hudLoadState() {
+        try { const v = localStorage.getItem(HUD_VIS_KEY); return v ? JSON.parse(v) : {}; } catch(e) { return {}; }
+      }
+      function hudSaveState(state) { localStorage.setItem(HUD_VIS_KEY, JSON.stringify(state)); }
+
+      function hudApply() {
+        const state = hudLoadState();
+        let anyHidden = false;
+        HUD_PANELS.forEach(({ id }) => {
+          const panel = document.getElementById(id);
+          const row   = document.getElementById("hrow-" + id);
+          const hidden = state[id] === false;
+          if (panel) panel.classList.toggle("panel-hidden", hidden);
+          if (row)   row.classList.toggle("vis", !hidden);
+          if (hidden) anyHidden = true;
+        });
+        document.getElementById("hudToggleIcon").textContent = anyHidden ? "visibility_off" : "tune";
+      }
+
+      function hudTogglePanel(id) {
+        const state = hudLoadState();
+        state[id] = state[id] === false ? true : false;
+        hudSaveState(state);
+        hudApply();
+      }
+
+      function hudSetAll(visible) {
+        const state = hudLoadState();
+        HUD_PANELS.forEach(({ id }) => { state[id] = visible; });
+        hudSaveState(state);
+        hudApply();
+      }
+
+      function toggleHudMenu(e) {
+        e.stopPropagation();
+        document.getElementById("hudMenu").classList.toggle("open");
+      }
+
+      document.addEventListener("click", function(e) {
+        const menu = document.getElementById("hudMenu");
+        if (menu && menu.classList.contains("open") && !menu.contains(e.target)) {
+          menu.classList.remove("open");
+        }
+      });
+      function getData() { const d = localStorage.getItem(DB_KEY); return d ? JSON.parse(d) : {}; }
+      function saveData(data) { localStorage.setItem(DB_KEY, JSON.stringify(data)); _nexusSync.broadcast('SYSTEMATIC'); updateSortieLog(); renderCalendar(); updateMetrics(); renderHeatmap(); }
+      function cycleStatus(iso) { const data = getData(); const cur = data[iso]; let next; if (!cur) next = "gym"; else if (cur === "gym") next = "learn"; else if (cur === "learn") next = "booth"; else if (cur === "booth") next = null; if (next) data[iso] = next; else delete data[iso]; saveData(data); }
+      function isoDate(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+      function updateClock() { const now = new Date(); const timeStr = now.toLocaleTimeString("en-US", { timeZone: "America/Los_Angeles", hour12: true, hour: "2-digit", minute: "2-digit" }); const dateStr = now.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", weekday: "long", month: "short", day: "numeric" }).toUpperCase(); document.getElementById("clockTime").textContent = timeStr; document.getElementById("clockDate").textContent = dateStr; document.getElementById("sbTime").textContent = timeStr; const start = new Date(TRANSFORM_START); start.setHours(0,0,0,0); const current = new Date(now); current.setHours(0,0,0,0); const dayNum = Math.max(0, Math.floor((current - start) / 86400000)) + 1; document.getElementById("transformCount").textContent = dayNum; document.getElementById("sbProtocol").textContent = `PROTOCOL: DAY ${dayNum}`; const dayName = now.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", weekday: "long" }).toUpperCase(); const shortDate = now.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric" }).toUpperCase(); document.getElementById("sbDayDate").textContent = `${dayName} // ${shortDate}`; }
+      function updateMetrics() { const data = getData(); const keys = Object.keys(data); const total = keys.length; const gym = keys.filter(k => data[k] === "gym").length; const learn = keys.filter(k => data[k] === "learn").length; const mix = keys.filter(k => data[k] === "booth").length; const now = new Date(); now.setHours(0,0,0,0); const start = new Date(TRANSFORM_START); start.setHours(0,0,0,0); const daysSince = Math.max(1, Math.floor((now - start) / 86400000) + 1); const cadence = Math.min(100, Math.round((total / daysSince) * 100)); let streak = 0; let cur = new Date(now); while(true){ const iso = isoDate(cur); if(data[iso]){ streak++; cur.setDate(cur.getDate() - 1); } else break; } let bestStreak=0,bTemp=0; const sKeys=Object.keys(data).sort(); for(let i=0;i<sKeys.length;i++){ if(i===0){bTemp=1;}else{const pd=new Date(sKeys[i-1]);const cd=new Date(sKeys[i]);((cd-pd)/86400000===1)?bTemp++:bTemp=1;} bestStreak=Math.max(bestStreak,bTemp); } bestStreak=Math.max(bestStreak,streak); document.getElementById("metCurStreak").textContent=streak; document.getElementById("metBestStreak").textContent=bestStreak; const mxS=Math.max(bestStreak,1); document.getElementById("barCurStreak").style.width=Math.round((streak/mxS)*100)+"%"; document.getElementById("barBestStreak").style.width="100%"; let weekdayCount=0, weekdayActive=0; for(let i=0;i<30;i++){ const d = new Date(now); d.setDate(now.getDate() - i); const dow = d.getDay(); if(dow !== 0 && dow !== 6){ weekdayCount++; if(data[isoDate(d)]) weekdayActive++; } } const compRate = weekdayCount ? Math.round((weekdayActive / weekdayCount) * 100) : 0; document.getElementById("metTotalDays").textContent = total; document.getElementById("metLearnDays").textContent = learn; document.getElementById("metGymDays").textContent = gym; document.getElementById("metMixDays").textContent = mix; const maxDots = Math.max(total, 1); document.getElementById("barTotalDays").style.width = "100%"; document.getElementById("barLearnDays").style.width = `${Math.round((learn / maxDots) * 100)}%`; document.getElementById("barGymDays").style.width = `${Math.round((gym / maxDots) * 100)}%`; document.getElementById("barMixDays").style.width = `${Math.round((mix / maxDots) * 100)}%`; const circ = 144.51; const offset = circ - (cadence / 100) * circ; document.getElementById("cadenceFill").style.strokeDashoffset = offset; document.getElementById("cadencePct").textContent = cadence; }
+      function renderHeatmap() {
+        const data = getData();
+        const DAY = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+        const counts = [0,0,0,0,0,0,0];
+        const keys = Object.keys(data);
+        keys.forEach(iso => { const d = new Date(iso + "T12:00:00"); counts[d.getDay()]++; });
+        const max = Math.max(...counts, 1);
+        const peakIdx = counts.indexOf(Math.max(...counts));
+        const container = document.getElementById("heatmapBars");
+        if (!container) return;
+        container.innerHTML = DAY.map((name, i) => {
+          const pct = max > 0 ? Math.round((counts[i] / max) * 100) : 0;
+          const isPeak = counts[i] === Math.max(...counts) && counts[i] > 0;
+          const color = isPeak ? "var(--hero-red)" : pct > 55 ? "var(--amber)" : pct > 25 ? "var(--learn-blue)" : "rgba(75,106,155,0.5)";
+          const glow = isPeak ? "box-shadow:0 0 10px rgba(224,58,62,0.6)" : pct > 55 ? "box-shadow:0 0 6px rgba(224,163,43,0.5)" : "";
+          return `<div class="hm-bar-wrap${isPeak?" hm-peak":""}">
+            <div class="hm-bar-count" style="color:${color}">${counts[i]||""}</div>
+            <div class="hm-bar-track">
+              <div class="hm-bar-fill" style="height:${Math.max(pct,3)}%;background:${color};${glow}"></div>
+            </div>
+            <div class="hm-bar-label">${name}</div>
+          </div>`;
+        }).join("");
+        const peakEl = document.getElementById("hmPeakDay");
+        const totalEl = document.getElementById("hmTotalLogged");
+        if (peakEl) peakEl.textContent = keys.length > 0 ? `Peak: ${DAY[peakIdx]} (${counts[peakIdx]}×)` : "No data yet";
+        if (totalEl) totalEl.textContent = `${keys.length} day${keys.length!==1?"s":""} logged`;
+      }
+      function updateSortieLog() { const data = getData(); const now = new Date(); const day = now.getDay(); const sun = new Date(now); sun.setDate(now.getDate() - day); let count = 0; const dotsEl = document.getElementById("weekDots"); const labelsEl = document.getElementById("dayLabels"); dotsEl.innerHTML = ""; labelsEl.innerHTML = ""; const dayNames = ["SUN","MON","TUE","WED","THU","FRI","SAT"]; for(let i=0;i<7;i++){ const d = new Date(sun); d.setDate(sun.getDate() + i); const iso = isoDate(d); const status = data[iso]; const dot = document.createElement("div"); let cls = "dot"; if(status === "gym"){ cls+=" active-gym"; count++; } else if(status === "learn"){ cls+=" active-learn"; count++; } else if(status === "booth"){ cls+=" active-booth"; count++; } dot.className = cls; dotsEl.appendChild(dot); const lbl = document.createElement("span"); lbl.textContent = dayNames[i]; labelsEl.appendChild(lbl); } document.getElementById("weekCount").innerHTML = `${count}<span>/7</span>`; }
+      function calculateRemainingHours(startDate, endDate) { let h=0; let now=new Date(); now.setHours(0,0,0,0); let cur=new Date(Math.max(now.getTime(), new Date(startDate).getTime())); cur.setHours(0,0,0,0); let end=new Date(endDate); end.setHours(0,0,0,0); while(cur <= end){ const dow=cur.getDay(); if(dow !==0 && dow !==6) h+=5; cur.setDate(cur.getDate()+1); } return h; }
+
+      function renderTargets() {
+        const container = document.getElementById("targetsContainer");
+        container.innerHTML = "";
+        const now = new Date();
+        const fmtDate = d => d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+        TARGETS.forEach(t => {
+          const totalDuration = t.end - t.start;
+          const elapsed = now - t.start;
+          const pct = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
+          const daysRemaining = Math.max(0, Math.ceil((t.end - now) / 86400000));
+          const isUrgent = daysRemaining < 14;
+          const card = document.createElement("div");
+          card.className = "mission-card";
+
+          if (t.garden) {
+            const weeksRemaining = Math.floor(daysRemaining / 7);
+            const monthsRemaining = (daysRemaining / 30.4).toFixed(1);
+            card.style.borderColor = "#2e7d4a";
+            card.innerHTML = `
+              <div class="mc-identity">
+                <div class="mc-name" style="color:#00e676">Garden</div>
+                <div class="mc-type">Season 2026</div>
+                <span class="mc-status-chip on-track">Growing</span>
+              </div>
+              <div class="mc-progress">
+                <div class="mc-date-row">
+                  <span>Started ${fmtDate(t.start)}</span>
+                  <span class="mc-date-end">Due ${fmtDate(t.end)}</span>
+                </div>
+                <div class="mc-bar"><div class="mc-bar-fill garden" style="width:${pct}%"></div></div>
+                <div class="mc-meta-row">
+                  <span class="mc-pct"><strong>${Math.round(pct)}%</strong> of season used</span>
+                </div>
+              </div>
+              <div class="mc-stats">
+                <div class="mc-days-num" style="color:#00e676">${daysRemaining}</div>
+                <div class="mc-days-label">days left</div>
+                <div class="mc-sub-stats">
+                  <div class="mc-sub-stat">
+                    <div class="mc-sub-val" style="color:#00e676">${weeksRemaining}</div>
+                    <div class="mc-sub-label">weeks</div>
+                  </div>
+                  <div class="mc-sub-stat">
+                    <div class="mc-sub-val" style="color:#00e676">${monthsRemaining}</div>
+                    <div class="mc-sub-label">months</div>
+                  </div>
+                </div>
+              </div>`;
+          } else {
+            const remainingHours = calculateRemainingHours(now, t.end);
+            card.innerHTML = `
+              <div class="mc-identity">
+                <div class="mc-name">${t.name}</div>
+                <div class="mc-type">Certification · CompTIA</div>
+                <span class="mc-status-chip ${isUrgent ? "urgent" : "on-track"}">${isUrgent ? "Urgent" : "On track"}</span>
+              </div>
+              <div class="mc-progress">
+                <div class="mc-date-row">
+                  <span>Started ${fmtDate(t.start)}</span>
+                  <span class="mc-date-end">Due ${fmtDate(t.end)}</span>
+                </div>
+                <div class="mc-bar"><div class="mc-bar-fill" style="width:${pct}%"></div></div>
+                <div class="mc-meta-row">
+                  <span class="mc-pct"><strong>${Math.round(pct)}%</strong> of time used</span>
+                  <span class="mc-hours-chip">${remainingHours}h study time left</span>
+                </div>
+              </div>
+              <div class="mc-stats">
+                <div class="mc-days-num ${isUrgent ? "urgent" : ""}">${daysRemaining}</div>
+                <div class="mc-days-label">days left</div>
+              </div>`;
+          }
+          container.appendChild(card);
+        });
+      }
+      let viewDate = new Date();
+      function navMonth(dir) { viewDate.setMonth(viewDate.getMonth() + dir); renderCalendar(); }
+      function renderCalendar() {
+        const y = viewDate.getFullYear(); const m = viewDate.getMonth();
+        const data = getData(); const now = new Date();
+        const mNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+        const actLabel = { gym: "Gym", learn: "Learn", booth: "Booth" };
+        document.getElementById("calMonthLabel").textContent = `${mNames[m]} ${y}`;
+        const grid = document.getElementById("calGrid");
+        grid.innerHTML = "";
+        ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d => {
+          const el = document.createElement("div"); el.className = "day-head"; el.textContent = d; grid.appendChild(el);
+        });
+        const firstDay = new Date(y,m,1); const lastDay = new Date(y,m+1,0);
+        for(let i=0;i<firstDay.getDay();i++){ const e = document.createElement("div"); e.className = "day-cell empty"; grid.appendChild(e); }
+        for(let d=1; d<=lastDay.getDate(); d++){
+          const cell = document.createElement("div"); cell.className = "day-cell";
+          const iso = `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+          const status = data[iso];
+          cell.innerHTML = `<span class="cal-num">${d}</span>${status ? `<span class="cal-tag">${actLabel[status] || status}</span>` : ""}`;
+          if(status) cell.classList.add(status);
+          if(y === now.getFullYear() && m === now.getMonth() && d === now.getDate()) cell.classList.add("today");
+          TARGETS.forEach(t => {
+            const tISO = `${t.end.getFullYear()}-${String(t.end.getMonth()+1).padStart(2,"0")}-${String(t.end.getDate()).padStart(2,"0")}`;
+            if(iso === tISO) cell.classList.add("deadline");
+          });
+          cell.onclick = () => cycleStatus(iso);
+          grid.appendChild(cell);
+        }
+      }
+      function exportMissionData() { const now = new Date(); let csv = "data:text/csv;charset=utf-8,"; csv += "Mission,Deadline,Days Remaining,Capacity Hours\n"; TARGETS.forEach(t => { const opts = { month:"short", day:"numeric", year:"numeric" }; const dl = t.end.toLocaleDateString("en-US", opts).toUpperCase(); const days = Math.max(0, Math.ceil((t.end - now) / 86400000)); const hrs = calculateRemainingHours(t.start, t.end); csv += `"${t.name}","${dl}","${days}","${hrs}"\n`; }); const dateStr = new Intl.DateTimeFormat("en-CA", { timeZone:"America/Los_Angeles", year:"numeric", month:"2-digit", day:"2-digit" }).format(now); const link = document.createElement("a"); link.setAttribute("href", encodeURI(csv)); link.setAttribute("download", `strike_missions_${dateStr}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link); }
+      function renderMissionDeadlines() {
+        const container = document.getElementById("missionDeadlines");
+        if (!container) return;
+        const now = new Date();
+        const fmtShort = d => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        container.innerHTML = TARGETS.map(t => {
+          const daysRemaining = Math.max(0, Math.ceil((t.end - now) / 86400000));
+          const totalDays = Math.ceil((t.end - t.start) / 86400000);
+          const elapsed = Math.max(0, Math.floor((now - t.start) / 86400000));
+          const pct = Math.min(100, (elapsed / totalDays) * 100);
+          const isUrgent = daysRemaining < 14;
+          const isSec = t.name === "Security+";
+          const color = t.garden ? "#00e676" : isSec ? "#bf40ff" : isUrgent ? "var(--hero-red)" : "var(--learn-blue)";
+          const borderColor = t.garden ? "rgba(0,200,100,0.4)" : isSec ? "rgba(191,64,255,0.45)" : isUrgent ? "rgba(224,58,62,0.5)" : "rgba(0,176,255,0.35)";
+          const glow = t.garden ? "rgba(0,230,118,0.2)" : isSec ? "rgba(191,64,255,0.18)" : isUrgent ? "rgba(224,58,62,0.18)" : "rgba(0,176,255,0.14)";
+          const shortName = t.garden ? "GARDEN" : t.name;
+          return `<div class="mission-dl-mini" style="border-color:${borderColor};box-shadow:0 0 10px ${glow}">
+            <div class="mdl-name" style="color:${color}">${shortName}</div>
+            <div class="mdl-days-wrap">
+              <span class="mdl-days" style="color:${color};text-shadow:0 0 8px ${color}">${daysRemaining}</span><span class="mdl-unit">d</span>
+            </div>
+            <div class="mdl-right">
+              <div class="mdl-deadline">Due ${fmtShort(t.end)}</div>
+              <div class="mdl-bar"><div class="mdl-bar-fill" style="width:${pct.toFixed(1)}%;background:${color};box-shadow:0 0 4px ${color}"></div></div>
+            </div>
+          </div>`;
+        }).join("");
+      }
+
+      function updateDayCountdown() {
+        const now = new Date();
+        const midnight = new Date(now); midnight.setHours(24,0,0,0);
+        const totalDay = 86400000;
+        const remaining = midnight - now;
+        const elapsed = totalDay - remaining;
+        const h = Math.floor(remaining / 3600000);
+        const m = Math.floor((remaining % 3600000) / 60000);
+        const s = Math.floor((remaining % 60000) / 1000);
+        const pad = n => String(n).padStart(2, "0");
+        document.getElementById("zcdH").textContent = pad(h);
+        document.getElementById("zcdM").textContent = pad(m);
+        document.getElementById("zcdS").textContent = pad(s);
+        document.getElementById("zcdFill").style.width = ((elapsed / totalDay) * 100).toFixed(2) + "%";
+      }
+      /* ── TODAY'S ZENITH LOG WIDGET ── */
+      const ZENITH_KEY = 'zenith_aura_v4';
+
+      const ZTD_MISSIONS = [
+        { key: 'gym',        label: 'Gym',          icon: 'fitness_center', color: '#00e676', rgb: '0,230,118'    },
+        { key: 'read',       label: 'Reading',       icon: 'menu_book',      color: '#fbbf24', rgb: '251,191,36'   },
+        { key: 'manuscript', label: 'Manuscript',    icon: 'edit_note',      color: '#b9d4ff', rgb: '185,212,255'  },
+        { key: 'wakeup',     label: 'Early Wake',    icon: 'alarm',          color: '#b300ff', rgb: '179,0,255'    },
+        { key: 'focus',      label: 'Focus Hours',   icon: 'psychology',     color: '#e03a3e', rgb: '224,58,62', isFocus: true },
+      ];
+
+      function renderZenithToday() {
+        const container = document.getElementById('ztdContent');
+        const dateTag   = document.getElementById('ztdDateTag');
+        if (!container) return;
+
+        const now = new Date();
+        const key = isoDate(now);
+
+        if (dateTag) {
+          dateTag.textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+
+        let zenithDb = {};
+        try { zenithDb = JSON.parse(localStorage.getItem(ZENITH_KEY)) || {}; } catch(e) {}
+        const entry = zenithDb[key] || {};
+
+        const results = ZTD_MISSIONS.map(m => ({
+          ...m,
+          done: m.isFocus ? (parseFloat(entry.focus) > 0) : !!entry[m.key],
+          value: m.isFocus ? (parseFloat(entry.focus) || 0) : null,
+        }));
+
+        const doneCount = results.filter(r => r.done).length;
+        const total = results.length;
+        const pct = Math.round((doneCount / total) * 100);
+        const scoreColor = doneCount >= 5 ? '#00e676' : doneCount >= 3 ? '#fbbf24' : doneCount >= 1 ? '#e0a32b' : 'rgba(155,181,217,0.35)';
+
+        container.innerHTML = `
+          <div class="ztd-score-bar">
+            <div style="text-align:center;flex-shrink:0;">
+              <div class="ztd-score-num" style="color:${scoreColor}">${doneCount}</div>
+              <div class="ztd-score-of">of ${total}</div>
+            </div>
+            <div class="ztd-progress-wrap">
+              <div class="ztd-progress-labels">
+                <span>Daily Progress</span>
+                <span>${pct}%</span>
+              </div>
+              <div class="ztd-track">
+                <div class="ztd-fill" style="width:${pct}%;background:${scoreColor};box-shadow:0 0 6px ${scoreColor}55;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="ztd-missions">
+            ${results.map(r => {
+              const status = r.isFocus
+                ? (r.value > 0 ? `${r.value}h` : '—')
+                : (r.done ? '✓ Done' : '—');
+              return `<div class="ztd-mission${r.done ? ' done' : ''}" style="--ztd-color:${r.color};--ztd-rgb:${r.rgb}">
+                <div class="ztd-mission-icon"><i class="material-icons-round">${r.icon}</i></div>
+                <div class="ztd-mission-name">${r.label}</div>
+                <div class="ztd-mission-status">${status}</div>
+              </div>`;
+            }).join('')}
+          </div>
+        `;
+      }
+
+      updateDayCountdown();
+      renderMissionDeadlines();
+      hudApply(); updateClock(); renderTargets(); renderCalendar(); updateSortieLog(); updateMetrics(); renderHeatmap(); renderZenithToday();
+      setInterval(() => { updateClock(); renderTargets(); updateDayCountdown(); renderMissionDeadlines(); }, 1000);
+      setInterval(renderZenithToday, 30000);
+
+      _nexusSync.listen(() => { updateSortieLog(); renderCalendar(); updateMetrics(); renderHeatmap(); renderZenithToday(); });
+
+      document.addEventListener("keydown", (e) => {
+        const tag = document.activeElement?.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+        if (e.key === "r" || e.key === "R") window.location.href = "Renegator.html";
+      });
+    </script>
+  </body>
+</html>
